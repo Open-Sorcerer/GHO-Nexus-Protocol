@@ -1,15 +1,19 @@
 import './globals.css'
 import ClientLayout from './Web3Provider'
-import { FC, PropsWithChildren } from 'react'
+import {FC, PropsWithChildren} from 'react'
+import Navbar from "@components/Layout/Navbar";
 
-const RootLayout: FC<PropsWithChildren<{}>> = ({ children }) => {
-	return (
-		<html lang="en">
-			<body>
-				<ClientLayout>{children}</ClientLayout>
-			</body>
-		</html>
-	)
+const RootLayout: FC<PropsWithChildren<{}>> = ({children}) => {
+    return (
+        <html lang="en">
+        <body>
+        <ClientLayout>
+            <Navbar/>
+            {children}
+        </ClientLayout>
+        </body>
+        </html>
+    )
 }
 
 export default RootLayout

@@ -1,7 +1,5 @@
 'use client'
 
-import { ConnectKitButton } from 'connectkit'
-
 const Home = () => {
 	return (
 		<div
@@ -12,7 +10,7 @@ const Home = () => {
 				height: '100vh',
 			}}
 		>
-			<ConnectKitButton/>
+			<div>Test</div>
 		</div>
 	)
 }
