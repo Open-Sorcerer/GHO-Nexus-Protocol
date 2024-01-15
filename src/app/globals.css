@@ -8,3 +8,12 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+/* Hide scrollbar for WebKit browsers (e.g., Chrome, Safari) */
+body::-webkit-scrollbar {
+	width: 0.5em;
+}
+
+body::-webkit-scrollbar-thumb {
+	background-color: transparent;
+}

@@ -12,26 +12,14 @@ export default function Navbar() {
       path: "/",
     },
     {
-      title: "About",
-      path: "/about",
-    },
-    {
-      title: "Room",
-      path: "/room",
-    },
-    {
-      title: "Lobby",
-      path: "/lobby",
-    },
-    {
-      title: "ItsAMatch",
-      path: "/itsamatch",
+      title: "Dashboard",
+      path: "/dashboard",
     },
   ];
 
   return (
     <>
-      <nav className="flex w-full items-center justify-between p-4 lg:px-6 fixed top-0 bg-black/70 backdrop-blur-sm z-50">
+      <nav className="flex w-full items-center justify-between p-4 lg:px-6 fixed top-0 z-50 bg-black/50">
         <div className="block flex-none md:hidden">
           {/*<HamburgerMenu menu={menu} />*/}
         </div>
@@ -44,10 +32,10 @@ export default function Navbar() {
               {/*<LogoSquare className='w-5 h-5 relative p-2'/>*/}
               <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block p-2">
                 {/* {process.env.SITE_NAME} */}
-                GoTilo
+                Next14-ConnectKit
               </div>
             </Link>
-            {/* {menu.length!=0 && (
+            {menu.length!=0 && (
               <ul className="hidden gap-6 text-sm md:flex md:items-center">
                 {menu.map((item) => (
                   <li key={item.title}>
@@ -60,7 +48,7 @@ export default function Navbar() {
                   </li>
                 ))}
               </ul>
-            )} */}
+            )}
           </div>
           <div className="flex justify-end md:w-1/3">
             <ConnectKitButton/>
