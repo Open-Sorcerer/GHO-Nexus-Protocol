@@ -8,15 +8,13 @@ const RootLayout: FC<PropsWithChildren<{}>> = ({children}) => {
     return (
         <html lang="en">
         <body>
-        <div id="w-full h-full relative">
-            <ClientLayout>
+        <ClientLayout>
+            <div className="w-full h-full relative bg-fixed flex-1 justify-center text-black">
                 <Navbar/>
                 <Spliner/>
-                <div className="w-full h-full z-0 flex justify-center items-center fixed px-20">
-                    {children}
-                </div>
-            </ClientLayout>
-        </div>
+                {children}
+            </div>
+        </ClientLayout>
         </body>
         </html>
     )

@@ -30,7 +30,7 @@ export default function Navbar() {
               className="mr-2 flex flex-row w-full items-center justify-center md:w-auto lg:mr-6 divide-x"
             >
               {/*<LogoSquare className='w-5 h-5 relative p-2'/>*/}
-              <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block p-2">
+              <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block p-2 text-white">
                 {/* {process.env.SITE_NAME} */}
                 Next14-ConnectKit
               </div>
@@ -41,7 +41,7 @@ export default function Navbar() {
                   <li key={item.title}>
                     <Link
                       href={item.path}
-                      className="text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
+                      className="text-neutral-100 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
                     >
                       {item.title}
                     </Link>
