@@ -84,16 +84,20 @@ contract Balance {
     }
 
     function Borrow(address _token, uint256 _amount) public onlyAllowedTokens(_token) {
-        if(_amount > getBorrowLimitLeft(msg.sender)) {
+        uint256 amount;
+        userBorrowTokenBalance[msg.sender][_token] += _amount;
+        if(isEthereum[_token]){
+            amount = PriceConverter.getEthInUsd(_amount);
+        } else{
+            amount = _amount;
+        }
+
+        if(amount > getBorrowLimitLeft(msg.sender)) {
             revert BORROW_LIMIT_EXCEED();
         }
 
-        userBorrowTokenBalance[msg.sender][_token] += _amount;
-        if(isEthereum[_token]){
-            borrowBalance[msg.sender] += PriceConverter.getEthInUsd(_amount);
-        } else{
-            borrowBalance[msg.sender] += _amount;
-        }
+        borrowBalance[msg.sender] += amount;
+
         bool sent = IERC20(_token).transferFrom(address(this), msg.sender, _amount);
         if (!sent) revert FAILED_TO_BORROW();
     }
