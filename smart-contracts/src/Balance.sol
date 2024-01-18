@@ -9,6 +9,11 @@ contract Balance {
     error TOKEN_NOT_SUPPORTED();
     error BORROW_LIMIT_EXCEED();
     error FAILED_TO_BORROW();
+    error NOT_ENOUGH_AMOUNT_REPAYFULL();
+    error FAILED_TO_LEND();
+    error FAILED_TO_REPAY();
+    error FAILED_TO_WITHDRAW();
+    error NOT_ENOUGH_TOKEN_LENDED();
 
     address public owner;
     uint256 public threshold = 80;
@@ -34,6 +39,8 @@ contract Balance {
 
     mapping(address => bool) public allowedToken;
 
+    address[] public allowedTokenArray;
+
     constructor(address _owner) {
         owner = _owner;
     }
@@ -51,6 +58,7 @@ contract Balance {
 
     function setAllowedToken(address _tokenAddress, bool _allowed) public onlyOwner{
         allowedToken[_tokenAddress] = _allowed;
+        allowedTokenArray.push(_tokenAddress);
     }
 
     function setThreshold(uint256 _newThreshold) public onlyOwner{
@@ -63,7 +71,8 @@ contract Balance {
 
     // function to lend the tokens to the protocol
     function lend(address _token, uint256 _amount) public onlyAllowedTokens(_token){
-        IERC20(_token).transfer(address(this), _amount);
+        bool receiveToken = IERC20(_token).transfer(address(this), _amount);
+        if (!receiveToken) revert FAILED_TO_LEND();
 
         userLendTokenBalance[msg.sender][_token] += _amount;
 
@@ -89,12 +98,44 @@ contract Balance {
         if (!sent) revert FAILED_TO_BORROW();
     }
 
-    function rePay(address _token, uint256 _amount) public onlyAllowedTokens(_token) {
+    function rePayFull(address _token, uint256 _amount) public onlyAllowedTokens(_token) {
+        uint256 amount;
+        if(isEthereum[_token]){
+            amount = PriceConverter.getEthInUsd(_amount);
+        }else{
+            amount = _amount;
+        }
 
+        if(amount < ((borrowBalance[msg.sender] * 5) / 100 )) revert NOT_ENOUGH_AMOUNT_REPAYFULL();
+        bool receiveToken = IERC20(_token).transfer(address(this), _amount);
+        if (!receiveToken) revert FAILED_TO_REPAY();
+
+        uint256 length = allowedTokenArray.length;
+        unchecked {
+            for(uint256 i=0; i<length;){
+                userBorrowTokenBalance[msg.sender][allowedTokenArray[i]] = 0;
+                 ++i;
+            }
+        }
+        borrowBalance[msg.sender] = 0;
     }
 
     function withdrawToken(address _token, uint _amount) public onlyAllowedTokens(_token){
+        uint256 amount;
+        if(isEthereum[_token]){
+            amount = PriceConverter.getEthInUsd(_amount);
+        }else{
+            amount = _amount;
+        }
 
+        if(userLendTokenBalance[msg.sender][_token] < _amount) revert NOT_ENOUGH_TOKEN_LENDED();
+
+        userLendTokenBalance[msg.sender][_token] -= _amount;
+        userLendBalance[msg.sender] -= amount;
+
+
+        bool sent = IERC20(_token).transferFrom(address(this), msg.sender, ((_amount * 3) /100));
+        if (!sent) revert FAILED_TO_WITHDRAW();
     }
 
     
@@ -113,13 +154,23 @@ contract Balance {
         return getBorrowLimit(_user) - getAlreadyBorrowed(_user);
     }
 
+    function getBorrowTokenAmount(address _user, address _token) public view returns(uint256) {
+        return userBorrowTokenBalance[_user][_token];
+    }
 
-    // set function to lend the token
-    // set function to borrow the token
-    //  
-    // get function to check how much amount a user can borrow
-    // get function to check how much amount a user already borrowed
-    // get function to check how much amount a user can borrow more
+    function getUserLendTokenAmount(address _user, address _token) public view returns(uint256){
+        return userLendTokenBalance[_user][_token];
+    }
 
+    function getUserLendAmount(address _user) public view returns(uint256){
+        return userLendBalance[_user];
+    }
 
+    function isTokenSupported(address _token) public view returns(bool){
+        return allowedToken[_token];
+    }
+
+    function ownerAddr() public view returns(address){
+        return owner;
+    }
 }
