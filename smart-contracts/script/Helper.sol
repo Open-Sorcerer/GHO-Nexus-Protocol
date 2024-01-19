@@ -120,6 +120,10 @@ contract Helper {
     address constant usdcBaseGoerli =
         0xF175520C52418dfE19C8098071a252da48Cd1C19;
 
+    // Source Contract Addresses
+    address constant sepoliaSourceContractAddr =
+        0x40541651b8Ad61e0BF60Daf20B924b21499AB7F1;
+
     constructor() {
         networks[SupportedNetworks.ETHEREUM_SEPOLIA] = "Ethereum Sepolia";
         networks[SupportedNetworks.OPTIMISM_GOERLI] = "Optimism Goerli";
@@ -159,7 +163,8 @@ contract Helper {
             address router,
             address linkToken,
             address wrappedNative,
-            uint64 chainId
+            uint64 chainId,
+            address sourceContract
         )
     {
         if (network == SupportedNetworks.ETHEREUM_SEPOLIA) {
@@ -167,49 +172,56 @@ contract Helper {
                 routerEthereumSepolia,
                 linkEthereumSepolia,
                 wethEthereumSepolia,
-                chainIdEthereumSepolia
+                chainIdEthereumSepolia,
+                sepoliaSourceContractAddr
             );
         } else if (network == SupportedNetworks.OPTIMISM_GOERLI) {
             return (
                 routerOptimismGoerli,
                 linkOptimismGoerli,
                 wethOptimismGoerli,
-                chainIdOptimismGoerli
+                chainIdOptimismGoerli,
+                address(0)
             );
         } else if (network == SupportedNetworks.ARBITRUM_SEPOLIA) {
             return (
                 routerArbitrumSepolia,
                 linkArbitrumSepolia,
                 wethArbitrumSepolia,
-                chainIdArbitrumSepolia
+                chainIdArbitrumSepolia,
+                address(0)
             );
         } else if (network == SupportedNetworks.AVALANCHE_FUJI) {
             return (
                 routerAvalancheFuji,
                 linkAvalancheFuji,
                 wavaxAvalancheFuji,
-                chainIdAvalancheFuji
+                chainIdAvalancheFuji,
+                address(0)
             );
         } else if (network == SupportedNetworks.POLYGON_MUMBAI) {
             return (
                 routerPolygonMumbai,
                 linkPolygonMumbai,
                 wmaticPolygonMumbai,
-                chainIdPolygonMumbai
+                chainIdPolygonMumbai,
+                address(0)
             );
         } else if (network == SupportedNetworks.BNB_CHAIN_TESTNET) {
             return (
                 routerBnbChainTestnet,
                 linkBnbChainTestnet,
                 wbnbBnbChainTestnet,
-                chainIdBnbChainTestnet
+                chainIdBnbChainTestnet,
+                address(0)
             );
         } else if (network == SupportedNetworks.BASE_GOERLI) {
             return (
                 routerBaseGoerli,
                 linkBaseGoerli,
                 wethBaseGoerli,
-                chainIdBaseGoerli
+                chainIdBaseGoerli,
+                address(0)
             );
         }
     }
