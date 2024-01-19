@@ -20,11 +20,6 @@ contract SourceContract {
     error NEED_TO_SEND_SOME_TOKENS();
     error FAILED_TO_RECEIVE_TOKEN();
 
-    enum PayFeesIn {
-        Native,
-        LINK
-    }
-
     address public immutable i_router;
     address public immutable i_link;
 
@@ -73,8 +68,7 @@ contract SourceContract {
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address receiver,
-        PayFeesIn payFeesIn
+        address receiver // reciever contract address that implemented _ccipReceive function
     ) public onlyAllowedTokens(_token) amountNotZero(_amount) {
         // Recieve token from the user
         bool receiveToken = IERC20(_token).transferFrom(
@@ -94,7 +88,7 @@ contract SourceContract {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -104,18 +98,11 @@ contract SourceContract {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
 
         emit LendMessageSent(messageId);
     }
@@ -124,23 +111,23 @@ contract SourceContract {
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address _receiver,
-        PayFeesIn payFeesIn
+        uint64 calledChainSelector, // enter chain selector on which this smart contract is deployed to
+        address _receiver, // reciever contract address that implemented _ccipReceive function on destination chain
+        address _calledReciever // reciever contract address that implemented _ccipReceive function on source chain
     ) public onlyAllowedTokens(_token) {
         // update and check the balance on balance contract using Chainlink CCIP
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
             data: abi.encodeWithSignature(
-                "borrow(address,uint256,uint64,address,PayFeesIn)",
+                "borrow(address,uint256,uint64,address)",
                 _token,
                 _amount,
-                destinationChainSelector,
-                _receiver,
-                payFeesIn
+                calledChainSelector,
+                _calledReciever
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -150,18 +137,11 @@ contract SourceContract {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
         emit BorrowMessageSent(messageId);
     }
 
@@ -178,8 +158,7 @@ contract SourceContract {
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address _receiver,
-        PayFeesIn payFeesIn
+        address _receiver
     ) public onlyAllowedTokens(_token) {
         bool receiveToken = IERC20(_token).transfer(address(this), _amount);
         if (!receiveToken) revert FAILED_TO_REPAY();
@@ -193,7 +172,7 @@ contract SourceContract {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -203,18 +182,12 @@ contract SourceContract {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
+
         emit RePayMessageSent(messageId);
     }
 
@@ -222,8 +195,7 @@ contract SourceContract {
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address _receiver,
-        PayFeesIn payFeesIn
+        address _receiver
     ) public onlyAllowedTokens(_token) {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
@@ -234,7 +206,7 @@ contract SourceContract {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -244,18 +216,12 @@ contract SourceContract {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
+
         emit RemoveLendMessageSent(messageId);
     }
 

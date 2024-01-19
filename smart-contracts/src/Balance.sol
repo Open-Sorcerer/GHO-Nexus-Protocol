@@ -17,11 +17,6 @@ contract Balance {
     error FAILED_TO_WITHDRAW();
     error NOT_ENOUGH_TOKEN_LENDED();
 
-    enum PayFeesIn {
-        Native,
-        LINK
-    }
-
     address public immutable i_router;
     address public immutable i_link;
 
@@ -96,9 +91,8 @@ contract Balance {
     function borrow(
         address _token,
         uint256 _amount,
-        uint64 destinationChainSelector,
-        address receiver,
-        PayFeesIn payFeesIn
+        uint64 calledChainSelector,
+        address receiver
     ) public {
         uint256 amount;
         if (isEthereum[_token]) {
@@ -123,28 +117,21 @@ contract Balance {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
-            destinationChainSelector,
+            calledChainSelector,
             message
         );
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            calledChainSelector,
+            message
+        );
     }
 
     function rePayFull(address _token, uint256 _amount) public {
@@ -172,8 +159,7 @@ contract Balance {
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address receiver,
-        PayFeesIn payFeesIn
+        address receiver
     ) public {
         uint256 amount;
         if (isEthereum[_token]) {
@@ -197,7 +183,7 @@ contract Balance {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -207,18 +193,11 @@ contract Balance {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
     }
 
     // function to get the Borrow limit of the user
