@@ -3,6 +3,16 @@ Ethereum Sepolia SourceGateway Contract Address: 0xA1ad04b9240E9E632DE467bA8F85c
 Ethereum Sepolia Balance Contract Address: 0x4d0dE8b8455F01Dabc34dDe820076a6CB7482ffB
 Ethereum Sepolia BalanceDestination contract address: 0xA758dd34Afdbe348C986E59583542A91627cFa82
 
+
+------------------
+
+
 Arbitrum Sepolia SourceContract contract Address : 0x781758FF2FcB9BBe5F47533ad5ae0E04982665eF
 
 Arbitrum Sepolia SourceGateway contract address : 0x529dcE26b4B4012e25DE759641a450645D0a5c70
+
+
+
+--------------------
+
+TokenBridge contract deployed on  Ethereum Sepolia with address:  0x42b70E6b8faD8327edf1E2E59860e4281362415E
