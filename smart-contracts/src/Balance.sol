@@ -3,6 +3,9 @@ pragma solidity 0.8.19;
 
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/contracts/token/ERC20/IERC20.sol";
 import {PriceConverter} from "./PriceConverter.sol";
+import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
+import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
+import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 
 contract Balance {
     error ONLY_OWNER_CALL_THIS_FUNCTION();
@@ -20,7 +23,10 @@ contract Balance {
         LINK
     }
 
-    address public owner;
+    address public immutable i_router;
+    address public immutable i_link;
+
+    address private owner;
     uint256 public threshold = 80;
 
     // user address => (Token address =>  lend balance of user)
@@ -46,8 +52,10 @@ contract Balance {
 
     address[] public allowedTokenArray;
 
-    constructor(address _owner) {
+    constructor(address _owner, address _router, address _link) {
         owner = _owner;
+        i_router = _router;
+        i_link = _link;
     }
 
     modifier onlyOwner() {
@@ -90,7 +98,7 @@ contract Balance {
         }
     }
 
-    function Borrow(
+    function borrow(
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
@@ -110,12 +118,41 @@ contract Balance {
 
         userBorrowTokenBalance[msg.sender][_token] += _amount;
         borrowBalance[msg.sender] += amount;
+
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(receiver),
+            data: abi.encodeWithSignature(
+                "borrowToken(address,uint256)",
+                _token,
+                _amount
+            ),
+            tokenAmounts: new Client.EVMTokenAmount[](0),
+            extraArgs: "",
+            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+        });
+
+        uint256 fee = IRouterClient(i_router).getFee(
+            destinationChainSelector,
+            message
+        );
+
+        bytes32 messageId;
+
+        if (payFeesIn == PayFeesIn.LINK) {
+            LinkTokenInterface(i_link).approve(i_router, fee);
+            messageId = IRouterClient(i_router).ccipSend(
+                destinationChainSelector,
+                message
+            );
+        } else {
+            messageId = IRouterClient(i_router).ccipSend{value: fee}(
+                destinationChainSelector,
+                message
+            );
+        }
     }
 
-    function rePayFull(
-        address _token,
-        uint256 _amount
-    ) public onlyAllowedTokens(_token) {
+    function rePayFull(address _token, uint256 _amount) public {
         uint256 amount;
         if (isEthereum[_token]) {
             amount = PriceConverter.getEthInUsd(_amount);
@@ -125,8 +162,6 @@ contract Balance {
 
         if (amount < ((borrowBalance[msg.sender] * 5) / 100))
             revert NOT_ENOUGH_AMOUNT_REPAYFULL();
-        bool receiveToken = IERC20(_token).transfer(address(this), _amount);
-        if (!receiveToken) revert FAILED_TO_REPAY();
 
         uint256 length = allowedTokenArray.length;
         unchecked {
@@ -138,9 +173,12 @@ contract Balance {
         borrowBalance[msg.sender] = 0;
     }
 
-    function withdrawToken(
+    function removeLendBalance(
         address _token,
-        uint _amount
+        uint256 _amount,
+        uint64 destinationChainSelector,
+        address receiver,
+        PayFeesIn payFeesIn
     ) public onlyAllowedTokens(_token) {
         uint256 amount;
         if (isEthereum[_token]) {
@@ -155,12 +193,37 @@ contract Balance {
         userLendTokenBalance[msg.sender][_token] -= _amount;
         userLendBalance[msg.sender] -= amount;
 
-        bool sent = IERC20(_token).transferFrom(
-            address(this),
-            msg.sender,
-            ((_amount * 3) / 100)
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(receiver),
+            data: abi.encodeWithSignature(
+                "removeLend(address,uint256)",
+                _token,
+                _amount
+            ),
+            tokenAmounts: new Client.EVMTokenAmount[](0),
+            extraArgs: "",
+            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+        });
+
+        uint256 fee = IRouterClient(i_router).getFee(
+            destinationChainSelector,
+            message
         );
-        if (!sent) revert FAILED_TO_WITHDRAW();
+
+        bytes32 messageId;
+
+        if (payFeesIn == PayFeesIn.LINK) {
+            LinkTokenInterface(i_link).approve(i_router, fee);
+            messageId = IRouterClient(i_router).ccipSend(
+                destinationChainSelector,
+                message
+            );
+        } else {
+            messageId = IRouterClient(i_router).ccipSend{value: fee}(
+                destinationChainSelector,
+                message
+            );
+        }
     }
 
     // function to get the Borrow limit of the user

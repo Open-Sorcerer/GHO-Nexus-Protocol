@@ -18,7 +18,6 @@ library PriceConverter {
     return uint256(answer * 10000000000);
   }
 
-
   function getEthInUsd(uint256 ethAmount)
     public
     view
