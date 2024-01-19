@@ -17,8 +17,10 @@ contract SourceContract {
     error NEED_TO_SEND_SOME_TOKENS();
     error TOO_MUCH_INTEREST();
 
-    address public immutable i_router;
-    address public immutable i_link;
+    address private immutable i_router;
+    address private immutable i_link;
+    address private owner;
+    uint256 private lendInterestRate = 3;
 
     event LendMessageSent(bytes32 messageId);
     event BorrowMessageSent(bytes32 messageId);
@@ -26,9 +28,6 @@ contract SourceContract {
     event RemoveLendMessageSent(bytes32 messageId);
     event BorrowedToken(address token, uint256 amount);
     event RemovedLend(address token, uint256 amount);
-
-    address private owner;
-    uint256 private lendInterestRate = 3;
 
     mapping(address => bool) public allowedToken;
 
@@ -51,13 +50,6 @@ contract SourceContract {
     modifier amountNotZero(uint256 _amount) {
         if (_amount == 0) revert NEED_TO_SEND_SOME_TOKENS();
         _;
-    }
-
-    function setAllowedToken(
-        address _tokenAddress,
-        bool _allowed
-    ) public onlyOwner {
-        allowedToken[_tokenAddress] = _allowed;
     }
 
     // function to lend the tokens to the protocol
@@ -239,6 +231,13 @@ contract SourceContract {
         emit RemovedLend(_token, _amount);
     }
 
+    function setAllowedToken(
+        address _tokenAddress,
+        bool _allowed
+    ) public onlyOwner {
+        allowedToken[_tokenAddress] = _allowed;
+    }
+
     function setLendInterest(uint256 _newInterest) public onlyOwner {
         if (_newInterest < 10) revert TOO_MUCH_INTEREST();
         lendInterestRate = _newInterest;
@@ -254,5 +253,13 @@ contract SourceContract {
 
     function getLendInterestRate() public view returns (uint256) {
         return lendInterestRate;
+    }
+
+    function getRouterAddress() public view returns (address) {
+        return i_router;
+    }
+
+    function getLinkAddress() public view returns (address) {
+        return i_link;
     }
 }
