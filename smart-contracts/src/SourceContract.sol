@@ -34,7 +34,6 @@ contract SourceContract {
     event RemoveLendMessageSent(bytes32 messageId);
 
     address private owner;
-    uint256 public threshold = 80;
 
     mapping(address => bool) public allowedToken;
 
@@ -67,10 +66,6 @@ contract SourceContract {
     ) public onlyOwner {
         allowedToken[_tokenAddress] = _allowed;
         allowedTokenArray.push(_tokenAddress);
-    }
-
-    function setThreshold(uint256 _newThreshold) public onlyOwner {
-        threshold = _newThreshold;
     }
 
     // function to lend the tokens to the protocol
