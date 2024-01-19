@@ -158,7 +158,11 @@ contract SourceContract {
         uint64 destinationChainSelector,
         address _receiver
     ) public onlyAllowedTokens(_token) {
-        bool receiveToken = IERC20(_token).transfer(address(this), _amount);
+        bool receiveToken = IERC20(_token).transferFrom(
+            msg.sender,
+            address(this),
+            _amount
+        );
         if (!receiveToken) revert FAILED_TO_REPAY();
 
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
