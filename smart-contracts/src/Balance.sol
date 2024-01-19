@@ -13,12 +13,11 @@ contract Balance {
     error NOT_ENOUGH_AMOUNT_REPAYFULL();
     error NOT_ENOUGH_TOKEN_LENDED();
 
-    address public immutable i_router;
-    address public immutable i_link;
-
+    address private immutable i_router;
+    address private immutable i_link;
     address private owner;
-    uint256 public threshold = 80;
-    uint256 public borrowInterestRate = 5;
+    uint256 private threshold = 80;
+    uint256 private borrowInterestRate = 5;
 
     // user address => (Token address =>  lend balance of user)
     mapping(address => mapping(address => uint256)) public userLendTokenBalance;
@@ -235,5 +234,21 @@ contract Balance {
 
     function ownerAddr() public view returns (address) {
         return owner;
+    }
+
+    function getRouterAddress() public view returns (address) {
+        return i_router;
+    }
+
+    function getLinkAddress() public view returns (address) {
+        return i_link;
+    }
+
+    function getThreshold() public view returns (uint256) {
+        return threshold;
+    }
+
+    function getborrowInterestRate() public view returns (uint256) {
+        return borrowInterestRate;
     }
 }
