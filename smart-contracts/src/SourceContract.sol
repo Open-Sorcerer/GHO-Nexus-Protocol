@@ -10,15 +10,11 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 contract SourceContract {
     error ONLY_OWNER_CALL_THIS_FUNCTION();
     error TOKEN_NOT_SUPPORTED();
-    error BORROW_LIMIT_EXCEED();
     error FAILED_TO_BORROW();
-    error NOT_ENOUGH_AMOUNT_REPAYFULL();
     error FAILED_TO_LEND();
     error FAILED_TO_REPAY();
     error FAILED_TO_WITHDRAW();
-    error NOT_ENOUGH_TOKEN_LENDED();
     error NEED_TO_SEND_SOME_TOKENS();
-    error FAILED_TO_RECEIVE_TOKEN();
     error TOO_MUCH_INTEREST();
 
     address public immutable i_router;
@@ -35,8 +31,6 @@ contract SourceContract {
     uint256 private lendInterestRate = 3;
 
     mapping(address => bool) public allowedToken;
-
-    address[] public allowedTokenArray;
 
     constructor(address _owner, address _router, address _link) {
         owner = _owner;
@@ -64,7 +58,6 @@ contract SourceContract {
         bool _allowed
     ) public onlyOwner {
         allowedToken[_tokenAddress] = _allowed;
-        allowedTokenArray.push(_tokenAddress);
     }
 
     // function to lend the tokens to the protocol
@@ -80,7 +73,7 @@ contract SourceContract {
             address(this),
             _amount
         );
-        if (!receiveToken) revert FAILED_TO_RECEIVE_TOKEN();
+        if (!receiveToken) revert FAILED_TO_LEND();
 
         // update the balance on balance contract using Chainlink CCIP
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
