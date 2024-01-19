@@ -123,6 +123,12 @@ contract Helper {
     // Source Contract Addresses
     address constant sepoliaSourceContractAddr =
         0x40541651b8Ad61e0BF60Daf20B924b21499AB7F1;
+    address constant arbitrumSourceContractAddr =
+        0x781758FF2FcB9BBe5F47533ad5ae0E04982665eF;
+
+    // Balance Contract Addresses
+    address constant sepoliaBalanceAddr =
+        0x4d0dE8b8455F01Dabc34dDe820076a6CB7482ffB;
 
     constructor() {
         networks[SupportedNetworks.ETHEREUM_SEPOLIA] = "Ethereum Sepolia";
@@ -164,7 +170,8 @@ contract Helper {
             address linkToken,
             address wrappedNative,
             uint64 chainId,
-            address sourceContract
+            address sourceContract,
+            address balanceContact
         )
     {
         if (network == SupportedNetworks.ETHEREUM_SEPOLIA) {
@@ -173,7 +180,8 @@ contract Helper {
                 linkEthereumSepolia,
                 wethEthereumSepolia,
                 chainIdEthereumSepolia,
-                sepoliaSourceContractAddr
+                sepoliaSourceContractAddr,
+                sepoliaBalanceAddr
             );
         } else if (network == SupportedNetworks.OPTIMISM_GOERLI) {
             return (
@@ -181,6 +189,7 @@ contract Helper {
                 linkOptimismGoerli,
                 wethOptimismGoerli,
                 chainIdOptimismGoerli,
+                address(0),
                 address(0)
             );
         } else if (network == SupportedNetworks.ARBITRUM_SEPOLIA) {
@@ -189,6 +198,7 @@ contract Helper {
                 linkArbitrumSepolia,
                 wethArbitrumSepolia,
                 chainIdArbitrumSepolia,
+                arbitrumSourceContractAddr,
                 address(0)
             );
         } else if (network == SupportedNetworks.AVALANCHE_FUJI) {
@@ -197,6 +207,7 @@ contract Helper {
                 linkAvalancheFuji,
                 wavaxAvalancheFuji,
                 chainIdAvalancheFuji,
+                address(0),
                 address(0)
             );
         } else if (network == SupportedNetworks.POLYGON_MUMBAI) {
@@ -205,6 +216,7 @@ contract Helper {
                 linkPolygonMumbai,
                 wmaticPolygonMumbai,
                 chainIdPolygonMumbai,
+                address(0),
                 address(0)
             );
         } else if (network == SupportedNetworks.BNB_CHAIN_TESTNET) {
@@ -213,6 +225,7 @@ contract Helper {
                 linkBnbChainTestnet,
                 wbnbBnbChainTestnet,
                 chainIdBnbChainTestnet,
+                address(0),
                 address(0)
             );
         } else if (network == SupportedNetworks.BASE_GOERLI) {
@@ -221,6 +234,7 @@ contract Helper {
                 linkBaseGoerli,
                 wethBaseGoerli,
                 chainIdBaseGoerli,
+                address(0),
                 address(0)
             );
         }
