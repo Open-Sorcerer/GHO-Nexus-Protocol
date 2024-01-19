@@ -63,11 +63,6 @@ contract Balance {
         _;
     }
 
-    modifier onlyAllowedTokens(address _tokenAddress) {
-        if (allowedToken[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
-        _;
-    }
-
     function setAllowedToken(
         address _tokenAddress,
         bool _allowed
@@ -179,7 +174,7 @@ contract Balance {
         uint64 destinationChainSelector,
         address receiver,
         PayFeesIn payFeesIn
-    ) public onlyAllowedTokens(_token) {
+    ) public {
         uint256 amount;
         if (isEthereum[_token]) {
             amount = PriceConverter.getEthInUsd(_amount);
