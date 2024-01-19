@@ -17,6 +17,8 @@ contract SourceContract {
     error FAILED_TO_REPAY();
     error FAILED_TO_WITHDRAW();
     error NOT_ENOUGH_TOKEN_LENDED();
+    error NEED_TO_SEND_SOME_TOKENS();
+    error FAILED_TO_RECEIVE_TOKEN();
 
     enum PayFeesIn {
         Native,
@@ -50,7 +52,12 @@ contract SourceContract {
     }
 
     modifier onlyAllowedTokens(address _tokenAddress) {
-        if (allowedToken[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
+        if (!allowedToken[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
+        _;
+    }
+
+    modifier amountNotZero(uint256 _amount) {
+        if (_amount == 0) revert NEED_TO_SEND_SOME_TOKENS();
         _;
     }
 
@@ -73,10 +80,14 @@ contract SourceContract {
         uint64 destinationChainSelector,
         address receiver,
         PayFeesIn payFeesIn
-    ) public onlyAllowedTokens(_token) {
+    ) public onlyAllowedTokens(_token) amountNotZero(_amount) {
         // Recieve token from the user
-        bool receiveToken = IERC20(_token).transfer(address(this), _amount);
-        if (!receiveToken) revert FAILED_TO_LEND();
+        bool receiveToken = IERC20(_token).transferFrom(
+            msg.sender,
+            address(this),
+            _amount
+        );
+        if (!receiveToken) revert FAILED_TO_RECEIVE_TOKEN();
 
         // update the balance on balance contract using Chainlink CCIP
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({

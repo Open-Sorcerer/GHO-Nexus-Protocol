@@ -13,7 +13,6 @@ contract Balance {
     error BORROW_LIMIT_EXCEED();
     error FAILED_TO_BORROW();
     error NOT_ENOUGH_AMOUNT_REPAYFULL();
-    error FAILED_TO_LEND();
     error FAILED_TO_REPAY();
     error FAILED_TO_WITHDRAW();
     error NOT_ENOUGH_TOKEN_LENDED();
@@ -82,14 +81,14 @@ contract Balance {
         isEthereum[_tokenAddress] = _allowed;
     }
 
-    // function to lend the tokens to the protocol
+    // function to update the data of the tokens
     function lend(address _token, uint256 _amount) public {
         userLendTokenBalance[msg.sender][_token] += _amount;
 
         if (isEthereum[_token]) {
             userLendBalance[msg.sender] += PriceConverter.getEthInUsd(_amount);
         } else {
-            userLendBalance[msg.sender] += PriceConverter.getEthInUsd(_amount);
+            userLendBalance[msg.sender] += _amount;
         }
     }
 
