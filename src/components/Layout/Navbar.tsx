@@ -15,6 +15,10 @@ export default function Navbar() {
       title: "Dashboard",
       path: "/dashboard",
     },
+    {
+        title: "Bridge",
+        path: "/bridge",
+    }
   ];
 
   return (
