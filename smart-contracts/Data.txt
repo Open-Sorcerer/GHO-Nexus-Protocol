@@ -16,3 +16,6 @@ Arbitrum Sepolia SourceGateway contract address : 0x529dcE26b4B4012e25DE759641a4
 --------------------
 
 TokenBridge contract deployed on  Ethereum Sepolia with address:  0x42b70E6b8faD8327edf1E2E59860e4281362415E
+
+TokenBridge contract deployed on  Arbitrum Sepolia with address:
+0x942a156cd363CC04Eac8577a509D360eFb5453Fa
