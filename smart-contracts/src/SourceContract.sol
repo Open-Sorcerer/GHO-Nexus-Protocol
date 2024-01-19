@@ -27,6 +27,7 @@ contract SourceContract {
     event BorrowMessageSent(bytes32 messageId);
     event RePayMessageSent(bytes32 messageId);
     event RemoveLendMessageSent(bytes32 messageId);
+    event BorrowedToken(address token, uint256 amount);
 
     address private owner;
 
@@ -114,7 +115,7 @@ contract SourceContract {
         uint64 calledChainSelector, // enter chain selector on which this smart contract is deployed to
         address _receiver, // reciever contract address that implemented _ccipReceive function on destination chain
         address _calledReciever // reciever contract address that implemented _ccipReceive function on source chain
-    ) public onlyAllowedTokens(_token) {
+    ) public onlyAllowedTokens(_token) amountNotZero(_amount) {
         // update and check the balance on balance contract using Chainlink CCIP
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
@@ -146,12 +147,9 @@ contract SourceContract {
     }
 
     function borrowToken(address _token, uint256 _amount) public {
-        bool sent = IERC20(_token).transferFrom(
-            address(this),
-            msg.sender,
-            _amount
-        );
+        bool sent = IERC20(_token).transfer(msg.sender, _amount);
         if (!sent) revert FAILED_TO_BORROW();
+        emit BorrowedToken(_token, _amount);
     }
 
     function rePayFullAmount(
