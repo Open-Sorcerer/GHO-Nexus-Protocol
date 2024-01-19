@@ -158,7 +158,7 @@ contract Balance {
     function removeLendBalance(
         address _token,
         uint256 _amount,
-        uint64 destinationChainSelector,
+        uint64 calledChainSelector,
         address receiver
     ) public {
         uint256 amount;
@@ -187,7 +187,7 @@ contract Balance {
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
-            destinationChainSelector,
+            calledChainSelector,
             message
         );
 
@@ -195,7 +195,7 @@ contract Balance {
 
         LinkTokenInterface(i_link).approve(i_router, fee);
         messageId = IRouterClient(i_router).ccipSend(
-            destinationChainSelector,
+            calledChainSelector,
             message
         );
     }

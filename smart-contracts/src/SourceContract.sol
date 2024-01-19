@@ -19,6 +19,7 @@ contract SourceContract {
     error NOT_ENOUGH_TOKEN_LENDED();
     error NEED_TO_SEND_SOME_TOKENS();
     error FAILED_TO_RECEIVE_TOKEN();
+    error TOO_MUCH_INTEREST();
 
     address public immutable i_router;
     address public immutable i_link;
@@ -28,8 +29,10 @@ contract SourceContract {
     event RePayMessageSent(bytes32 messageId);
     event RemoveLendMessageSent(bytes32 messageId);
     event BorrowedToken(address token, uint256 amount);
+    event RemovedLend(address token, uint256 amount);
 
     address private owner;
+    uint256 private lendInterestRate = 3;
 
     mapping(address => bool) public allowedToken;
 
@@ -197,14 +200,18 @@ contract SourceContract {
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address _receiver
+        uint64 calledChainSelector, // enter chain selector on which this smart contract is deployed to
+        address _receiver,
+        address _calledReciever // reciever contract address that implemented _ccipReceive function on source chain
     ) public onlyAllowedTokens(_token) {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
             data: abi.encodeWithSignature(
-                "removeLendBalance(address,uint256,uint64,address,PayFeesIn)",
+                "removeLendBalance(address,uint256,uint64,address)",
                 _token,
-                _amount
+                _amount,
+                calledChainSelector,
+                _calledReciever
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
@@ -231,12 +238,17 @@ contract SourceContract {
         address _token,
         uint256 _amount
     ) public onlyAllowedTokens(_token) {
-        bool sent = IERC20(_token).transferFrom(
-            address(this),
+        bool sent = IERC20(_token).transfer(
             msg.sender,
-            ((_amount * 3) / 100)
+            ((_amount * lendInterestRate) / 100)
         );
         if (!sent) revert FAILED_TO_WITHDRAW();
+        emit RemovedLend(_token, _amount);
+    }
+
+    function setLendInterest(uint256 _newInterest) public onlyOwner {
+        if (_newInterest < 10) revert TOO_MUCH_INTEREST();
+        lendInterestRate = _newInterest;
     }
 
     function isTokenSupported(address _token) public view returns (bool) {
@@ -245,5 +257,9 @@ contract SourceContract {
 
     function ownerAddr() public view returns (address) {
         return owner;
+    }
+
+    function getLendInterestRate() public view returns (uint256) {
+        return lendInterestRate;
     }
 }
