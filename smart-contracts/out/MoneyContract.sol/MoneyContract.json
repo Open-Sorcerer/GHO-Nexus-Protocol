@@ -1,0 +1,20 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "src/MoneyContract.sol",
+    "id": 646,
+    "exportedSymbols": {},
+    "nodeType": "SourceUnit",
+    "src": "0:0:4",
+    "nodes": []
+  },
+  "id": 4
+}
