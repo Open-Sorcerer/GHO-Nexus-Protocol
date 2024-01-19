@@ -27,6 +27,7 @@ contract Balance {
 
     address private owner;
     uint256 public threshold = 80;
+    uint256 public borrowInterestRate = 5;
 
     // user address => (Token address =>  lend balance of user)
     mapping(address => mapping(address => uint256)) public userLendTokenBalance;
@@ -154,7 +155,7 @@ contract Balance {
             amount = _amount;
         }
 
-        if (amount < ((borrowBalance[msg.sender] * 5) / 100))
+        if (amount < ((borrowBalance[msg.sender] * borrowInterestRate) / 100))
             revert NOT_ENOUGH_AMOUNT_REPAYFULL();
 
         uint256 length = allowedTokenArray.length;
@@ -222,7 +223,7 @@ contract Balance {
 
     // function to get the Borrow limit of the user
     function getBorrowLimit(address _user) public view returns (uint256) {
-        return ((userLendBalance[_user] * 80) / 100);
+        return ((userLendBalance[_user] * threshold) / 100);
     }
 
     // function to get the amount the user already borrowed
