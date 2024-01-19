@@ -9,12 +9,8 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 
 contract Balance {
     error ONLY_OWNER_CALL_THIS_FUNCTION();
-    error TOKEN_NOT_SUPPORTED();
     error BORROW_LIMIT_EXCEED();
-    error FAILED_TO_BORROW();
     error NOT_ENOUGH_AMOUNT_REPAYFULL();
-    error FAILED_TO_REPAY();
-    error FAILED_TO_WITHDRAW();
     error NOT_ENOUGH_TOKEN_LENDED();
 
     address public immutable i_router;
