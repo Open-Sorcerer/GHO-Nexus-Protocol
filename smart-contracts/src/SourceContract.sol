@@ -34,28 +34,7 @@ contract SourceContract {
     address private owner;
     uint256 public threshold = 80;
 
-    // user address => (Token address =>  lend balance of user)
-    mapping(address => mapping(address => uint256)) public userLendTokenBalance;
-
-    // Lend balance of the user
-    // user address => lend balance of user
-    mapping(address => uint256) public userLendBalance;
-
-    // mapping to check that this is Ethereum
-    mapping(address => bool) public isEthereum;
-
-    // Borrow balance of the user of Token
-    // user address => (Token address => Borrow balance of user)
-    mapping(address => mapping(address => uint256))
-        public userBorrowTokenBalance;
-
-    // Borrow balance of the user
-    // user address => Borrow balance of user
-    mapping(address => uint256) public borrowBalance;
-
     mapping(address => bool) public allowedToken;
-
-    mapping(address => bool) public allowedBalanceContract;
 
     address[] public allowedTokenArray;
 
@@ -85,13 +64,6 @@ contract SourceContract {
 
     function setThreshold(uint256 _newThreshold) public onlyOwner {
         threshold = _newThreshold;
-    }
-
-    function setIsEthereum(
-        address _tokenAddress,
-        bool _allowed
-    ) public onlyOwner {
-        isEthereum[_tokenAddress] = _allowed;
     }
 
     // function to lend the tokens to the protocol
@@ -291,39 +263,6 @@ contract SourceContract {
             ((_amount * 3) / 100)
         );
         if (!sent) revert FAILED_TO_WITHDRAW();
-    }
-
-    // function to get the Borrow limit of the user
-    function getBorrowLimit(address _user) public view returns (uint256) {
-        return ((userLendBalance[_user] * 80) / 100);
-    }
-
-    // function to get the amount the user already borrowed
-    function getAlreadyBorrowed(address _user) public view returns (uint256) {
-        return borrowBalance[_user];
-    }
-
-    // function to get the amount the user van borrow more
-    function getBorrowLimitLeft(address _user) public view returns (uint256) {
-        return getBorrowLimit(_user) - getAlreadyBorrowed(_user);
-    }
-
-    function getBorrowTokenAmount(
-        address _user,
-        address _token
-    ) public view returns (uint256) {
-        return userBorrowTokenBalance[_user][_token];
-    }
-
-    function getUserLendTokenAmount(
-        address _user,
-        address _token
-    ) public view returns (uint256) {
-        return userLendTokenBalance[_user][_token];
-    }
-
-    function getUserLendAmount(address _user) public view returns (uint256) {
-        return userLendBalance[_user];
     }
 
     function isTokenSupported(address _token) public view returns (bool) {
