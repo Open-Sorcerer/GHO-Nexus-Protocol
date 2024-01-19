@@ -28,3 +28,5 @@ contract DeployTokenBridge is Script, Helper {
 }
 
 // forge script ./script/deployTokenBridge.s.sol:DeployTokenBridge -vvv --broadcast --rpc-url ethereumSepolia --sig "run(uint8)" -- 0
+
+// forge script ./script/deployTokenBridge.s.sol:DeployTokenBridge -vvv --broadcast --rpc-url arbitrumSepolia --sig "run(uint8)" -- 3
