@@ -10,34 +10,26 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 contract SourceContract {
     error ONLY_OWNER_CALL_THIS_FUNCTION();
     error TOKEN_NOT_SUPPORTED();
-    error BORROW_LIMIT_EXCEED();
     error FAILED_TO_BORROW();
-    error NOT_ENOUGH_AMOUNT_REPAYFULL();
     error FAILED_TO_LEND();
     error FAILED_TO_REPAY();
     error FAILED_TO_WITHDRAW();
-    error NOT_ENOUGH_TOKEN_LENDED();
     error NEED_TO_SEND_SOME_TOKENS();
-    error FAILED_TO_RECEIVE_TOKEN();
+    error TOO_MUCH_INTEREST();
 
-    enum PayFeesIn {
-        Native,
-        LINK
-    }
-
-    address public immutable i_router;
-    address public immutable i_link;
+    address private immutable i_router;
+    address private immutable i_link;
+    address private owner;
+    uint256 private lendInterestRate = 3;
 
     event LendMessageSent(bytes32 messageId);
     event BorrowMessageSent(bytes32 messageId);
     event RePayMessageSent(bytes32 messageId);
     event RemoveLendMessageSent(bytes32 messageId);
-
-    address private owner;
+    event BorrowedToken(address token, uint256 amount);
+    event RemovedLend(address token, uint256 amount);
 
     mapping(address => bool) public allowedToken;
-
-    address[] public allowedTokenArray;
 
     constructor(address _owner, address _router, address _link) {
         owner = _owner;
@@ -60,21 +52,12 @@ contract SourceContract {
         _;
     }
 
-    function setAllowedToken(
-        address _tokenAddress,
-        bool _allowed
-    ) public onlyOwner {
-        allowedToken[_tokenAddress] = _allowed;
-        allowedTokenArray.push(_tokenAddress);
-    }
-
     // function to lend the tokens to the protocol
     function lendToken(
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address receiver,
-        PayFeesIn payFeesIn
+        address receiver // reciever contract address that implemented _ccipReceive function
     ) public onlyAllowedTokens(_token) amountNotZero(_amount) {
         // Recieve token from the user
         bool receiveToken = IERC20(_token).transferFrom(
@@ -82,7 +65,7 @@ contract SourceContract {
             address(this),
             _amount
         );
-        if (!receiveToken) revert FAILED_TO_RECEIVE_TOKEN();
+        if (!receiveToken) revert FAILED_TO_LEND();
 
         // update the balance on balance contract using Chainlink CCIP
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
@@ -94,7 +77,7 @@ contract SourceContract {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -104,18 +87,11 @@ contract SourceContract {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
 
         emit LendMessageSent(messageId);
     }
@@ -124,23 +100,23 @@ contract SourceContract {
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address _receiver,
-        PayFeesIn payFeesIn
-    ) public onlyAllowedTokens(_token) {
+        uint64 calledChainSelector, // enter chain selector on which this smart contract is deployed to
+        address _receiver, // reciever contract address that implemented _ccipReceive function on destination chain
+        address _calledReciever // reciever contract address that implemented _ccipReceive function on source chain
+    ) public onlyAllowedTokens(_token) amountNotZero(_amount) {
         // update and check the balance on balance contract using Chainlink CCIP
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
             data: abi.encodeWithSignature(
-                "borrow(address,uint256,uint64,address,PayFeesIn)",
+                "borrow(address,uint256,uint64,address)",
                 _token,
                 _amount,
-                destinationChainSelector,
-                _receiver,
-                payFeesIn
+                calledChainSelector,
+                _calledReciever
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -150,38 +126,31 @@ contract SourceContract {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
         emit BorrowMessageSent(messageId);
     }
 
     function borrowToken(address _token, uint256 _amount) public {
-        bool sent = IERC20(_token).transferFrom(
-            address(this),
-            msg.sender,
-            _amount
-        );
+        bool sent = IERC20(_token).transfer(msg.sender, _amount);
         if (!sent) revert FAILED_TO_BORROW();
+        emit BorrowedToken(_token, _amount);
     }
 
     function rePayFullAmount(
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
-        address _receiver,
-        PayFeesIn payFeesIn
+        address _receiver
     ) public onlyAllowedTokens(_token) {
-        bool receiveToken = IERC20(_token).transfer(address(this), _amount);
+        bool receiveToken = IERC20(_token).transferFrom(
+            msg.sender,
+            address(this),
+            _amount
+        );
         if (!receiveToken) revert FAILED_TO_REPAY();
 
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
@@ -193,7 +162,7 @@ contract SourceContract {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -203,18 +172,12 @@ contract SourceContract {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
+
         emit RePayMessageSent(messageId);
     }
 
@@ -222,19 +185,22 @@ contract SourceContract {
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
+        uint64 calledChainSelector, // enter chain selector on which this smart contract is deployed to
         address _receiver,
-        PayFeesIn payFeesIn
+        address _calledReciever // reciever contract address that implemented _ccipReceive function on source chain
     ) public onlyAllowedTokens(_token) {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
             data: abi.encodeWithSignature(
-                "removeLendBalance(address,uint256,uint64,address,PayFeesIn)",
+                "removeLendBalance(address,uint256,uint64,address)",
                 _token,
-                _amount
+                _amount,
+                calledChainSelector,
+                _calledReciever
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -244,18 +210,12 @@ contract SourceContract {
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            destinationChainSelector,
+            message
+        );
+
         emit RemoveLendMessageSent(messageId);
     }
 
@@ -263,12 +223,24 @@ contract SourceContract {
         address _token,
         uint256 _amount
     ) public onlyAllowedTokens(_token) {
-        bool sent = IERC20(_token).transferFrom(
-            address(this),
+        bool sent = IERC20(_token).transfer(
             msg.sender,
-            ((_amount * 3) / 100)
+            ((_amount * lendInterestRate) / 100)
         );
         if (!sent) revert FAILED_TO_WITHDRAW();
+        emit RemovedLend(_token, _amount);
+    }
+
+    function setAllowedToken(
+        address _tokenAddress,
+        bool _allowed
+    ) public onlyOwner {
+        allowedToken[_tokenAddress] = _allowed;
+    }
+
+    function setLendInterest(uint256 _newInterest) public onlyOwner {
+        if (_newInterest < 10) revert TOO_MUCH_INTEREST();
+        lendInterestRate = _newInterest;
     }
 
     function isTokenSupported(address _token) public view returns (bool) {
@@ -277,5 +249,17 @@ contract SourceContract {
 
     function ownerAddr() public view returns (address) {
         return owner;
+    }
+
+    function getLendInterestRate() public view returns (uint256) {
+        return lendInterestRate;
+    }
+
+    function getRouterAddress() public view returns (address) {
+        return i_router;
+    }
+
+    function getLinkAddress() public view returns (address) {
+        return i_link;
     }
 }

@@ -9,25 +9,15 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 
 contract Balance {
     error ONLY_OWNER_CALL_THIS_FUNCTION();
-    error TOKEN_NOT_SUPPORTED();
     error BORROW_LIMIT_EXCEED();
-    error FAILED_TO_BORROW();
     error NOT_ENOUGH_AMOUNT_REPAYFULL();
-    error FAILED_TO_REPAY();
-    error FAILED_TO_WITHDRAW();
     error NOT_ENOUGH_TOKEN_LENDED();
 
-    enum PayFeesIn {
-        Native,
-        LINK
-    }
-
-    address public immutable i_router;
-    address public immutable i_link;
-
+    address private immutable i_router;
+    address private immutable i_link;
     address private owner;
-    uint256 public threshold = 80;
-    uint256 public borrowInterestRate = 5;
+    uint256 private threshold = 80;
+    uint256 private borrowInterestRate = 5;
 
     // user address => (Token address =>  lend balance of user)
     mapping(address => mapping(address => uint256)) public userLendTokenBalance;
@@ -96,9 +86,8 @@ contract Balance {
     function borrow(
         address _token,
         uint256 _amount,
-        uint64 destinationChainSelector,
-        address receiver,
-        PayFeesIn payFeesIn
+        uint64 calledChainSelector,
+        address receiver
     ) public {
         uint256 amount;
         if (isEthereum[_token]) {
@@ -123,28 +112,21 @@ contract Balance {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
-            destinationChainSelector,
+            calledChainSelector,
             message
         );
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            calledChainSelector,
+            message
+        );
     }
 
     function rePayFull(address _token, uint256 _amount) public {
@@ -171,9 +153,8 @@ contract Balance {
     function removeLendBalance(
         address _token,
         uint256 _amount,
-        uint64 destinationChainSelector,
-        address receiver,
-        PayFeesIn payFeesIn
+        uint64 calledChainSelector,
+        address receiver
     ) public {
         uint256 amount;
         if (isEthereum[_token]) {
@@ -197,28 +178,21 @@ contract Balance {
             ),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+            feeToken: i_link
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
-            destinationChainSelector,
+            calledChainSelector,
             message
         );
 
         bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+        LinkTokenInterface(i_link).approve(i_router, fee);
+        messageId = IRouterClient(i_router).ccipSend(
+            calledChainSelector,
+            message
+        );
     }
 
     // function to get the Borrow limit of the user
@@ -260,5 +234,21 @@ contract Balance {
 
     function ownerAddr() public view returns (address) {
         return owner;
+    }
+
+    function getRouterAddress() public view returns (address) {
+        return i_router;
+    }
+
+    function getLinkAddress() public view returns (address) {
+        return i_link;
+    }
+
+    function getThreshold() public view returns (uint256) {
+        return threshold;
+    }
+
+    function getborrowInterestRate() public view returns (uint256) {
+        return borrowInterestRate;
     }
 }
