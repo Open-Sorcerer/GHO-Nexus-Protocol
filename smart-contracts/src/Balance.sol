@@ -13,7 +13,6 @@ contract Balance {
     error BORROW_LIMIT_EXCEED();
     error FAILED_TO_BORROW();
     error NOT_ENOUGH_AMOUNT_REPAYFULL();
-    error FAILED_TO_LEND();
     error FAILED_TO_REPAY();
     error FAILED_TO_WITHDRAW();
     error NOT_ENOUGH_TOKEN_LENDED();
@@ -28,6 +27,7 @@ contract Balance {
 
     address private owner;
     uint256 public threshold = 80;
+    uint256 public borrowInterestRate = 5;
 
     // user address => (Token address =>  lend balance of user)
     mapping(address => mapping(address => uint256)) public userLendTokenBalance;
@@ -82,14 +82,14 @@ contract Balance {
         isEthereum[_tokenAddress] = _allowed;
     }
 
-    // function to lend the tokens to the protocol
+    // function to update the data of the tokens
     function lend(address _token, uint256 _amount) public {
         userLendTokenBalance[msg.sender][_token] += _amount;
 
         if (isEthereum[_token]) {
             userLendBalance[msg.sender] += PriceConverter.getEthInUsd(_amount);
         } else {
-            userLendBalance[msg.sender] += PriceConverter.getEthInUsd(_amount);
+            userLendBalance[msg.sender] += _amount;
         }
     }
 
@@ -155,7 +155,7 @@ contract Balance {
             amount = _amount;
         }
 
-        if (amount < ((borrowBalance[msg.sender] * 5) / 100))
+        if (amount < ((borrowBalance[msg.sender] * borrowInterestRate) / 100))
             revert NOT_ENOUGH_AMOUNT_REPAYFULL();
 
         uint256 length = allowedTokenArray.length;
@@ -223,7 +223,7 @@ contract Balance {
 
     // function to get the Borrow limit of the user
     function getBorrowLimit(address _user) public view returns (uint256) {
-        return ((userLendBalance[_user] * 80) / 100);
+        return ((userLendBalance[_user] * threshold) / 100);
     }
 
     // function to get the amount the user already borrowed
