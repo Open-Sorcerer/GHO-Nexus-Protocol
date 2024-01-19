@@ -3,12 +3,14 @@
 import { SiweMessage } from 'siwe'
 import { APP_NAME } from '@/lib/consts'
 import { FC, PropsWithChildren } from 'react'
-import { WagmiConfig, createConfig } from 'wagmi'
+import { WagmiConfig, createConfig, sepolia } from 'wagmi'
+import { arbitrumSepolia, avalancheFuji, baseSepolia, optimismSepolia } from 'viem/chains'
 import { ConnectKitProvider, SIWEConfig, SIWEProvider, getDefaultConfig } from 'connectkit'
 
 const config = createConfig(
 	getDefaultConfig({
 		appName: APP_NAME,
+		chains: [sepolia, baseSepolia, arbitrumSepolia, avalancheFuji, optimismSepolia],
 		infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
 		walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
 	})
@@ -52,7 +54,7 @@ const siweConfig = {
 const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
 	<WagmiConfig config={config}>
 		<SIWEProvider {...siweConfig}>
-			<ConnectKitProvider theme={"retro"}>{children}</ConnectKitProvider>
+			<ConnectKitProvider theme={'retro'}>{children}</ConnectKitProvider>
 		</SIWEProvider>
 	</WagmiConfig>
 )
