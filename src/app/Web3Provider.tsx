@@ -31,7 +31,7 @@ const siweConfig = {
 			version: '1',
 			uri: window.location.origin,
 			domain: window.location.host,
-			statement: 'Sign In With Ethereum to prove you control this wallet.',
+			statement: 'Hey there, autograph please!',
 		}).prepareMessage()
 	},
 	verifyMessage: ({ message, signature }) => {
