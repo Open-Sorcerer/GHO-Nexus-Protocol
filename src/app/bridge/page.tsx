@@ -49,8 +49,38 @@ const Bridge = () => {
         <div
             className="w-full h-fit z-0 flex flex-col justify-start items-center gap-10 relative py-24 px-24 overflow-y-scroll">
             <div className="w-1/2 h-full flex flex-col justify-evenly items-center">
-                <div className="w-full h-full widget-base flex justify-center bg-white p-4">
+                <div className="w-full h-full flex flex-col bg-white border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
                     <div className="flex flex-row justify-between items-center mb-8">
+
+                        {/* From Chain */}
+                        <div className="hs-dropdown relative inline-flex">
+                            <button id="hs-dropdown-basic" type="button"
+                                    className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
+                                    <span
+                                        className="flex items-center gap-x-3.5 rounded-lg text-sm text-gray-800">
+                                        <img src={fromChain!.image} alt={fromChain!.symbol} className="w-8 h-8"/>
+                                        {fromChain!.symbol}
+                                    </span>
+                                <svg className="hs-dropdown-open:rotate-180 w-4 h-4 text-gray-600"
+                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                     strokeLinejoin="round">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </button>
+
+                            <ul className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-md rounded-lg p-2"
+                                aria-labelledby="hs-dropdown-basic">
+                                {chainList.map((chain) => (<li key={chain.symbol} onClick={() => setFromChain(chain)}
+                                                               className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100">
+                                    <img src={chain.image} alt={chain.symbol} className="w-8 h-8"/>
+                                    {chain.symbol}
+                                </li>))}
+                            </ul>
+                        </div>
+
+                        {/* From Token */}
                         <div className="hs-dropdown relative inline-flex">
                             <button id="hs-dropdown-basic" type="button"
                                     className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
@@ -82,13 +112,14 @@ const Bridge = () => {
 
                         </div>
 
+                        {/* To Chain */}
                         <div className="hs-dropdown relative inline-flex">
                             <button id="hs-dropdown-basic" type="button"
                                     className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
                                     <span
                                         className="flex items-center gap-x-3.5 rounded-lg text-sm text-gray-800">
-                                        <img src={fromChain!.image} alt={fromChain!.symbol} className="w-8 h-8"/>
-                                        {fromChain!.symbol}
+                                        <img src={toChain!.image} alt={toChain!.symbol} className="w-8 h-8"/>
+                                        {toChain!.symbol}
                                     </span>
                                 <svg className="hs-dropdown-open:rotate-180 w-4 h-4 text-gray-600"
                                      xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -101,12 +132,13 @@ const Bridge = () => {
 
                             <ul className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-md rounded-lg p-2"
                                 aria-labelledby="hs-dropdown-basic">
-                                {chainList.map((chain) => (<li key={chain.symbol} onClick={() => setFromChain(chain)}
+                                {chainList.map((chain) => (<li key={chain.symbol} onClick={() => setToChain(chain)}
                                                                className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100">
                                     <img src={chain.image} alt={chain.symbol} className="w-8 h-8"/>
                                     {chain.symbol}
                                 </li>))}
                             </ul>
+
                         </div>
                     </div>
 
@@ -159,71 +191,7 @@ const Bridge = () => {
                     <path strokeLinecap="round" strokeLinejoin="round"
                           d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/>
                 </svg>
-                <div className="w-full h-full widget-base flex justify-center bg-white p-4">
-                    <div className="flex flex-row justify-between items-center mb-8">
-                        <div className="hs-dropdown relative inline-flex">
-                            <button id="hs-dropdown-basic" type="button"
-                                    className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
-                                {!toToken ? <>
-                                    Select Token
-                                </> : <span
-                                    className="flex items-center gap-x-3.5 rounded-lg text-sm text-gray-800">
-                                        <img src={toToken!.image} alt={toToken!.symbol} className="w-8 h-8"/>
-                                    {toToken!.symbol}
-                                    </span>}
-                                <svg className="hs-dropdown-open:rotate-180 w-4 h-4 text-gray-600"
-                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                     viewBox="0 0 24 24"
-                                     fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                                     strokeLinejoin="round">
-                                    <path d="m6 9 6 6 6-6"/>
-                                </svg>
-                            </button>
 
-                            <ul className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-md rounded-lg p-2"
-                                aria-labelledby="hs-dropdown-basic">
-                                {tokenList.map((token) => (<li key={token.symbol} onClick={() => setToToken(token)}
-                                                               className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100">
-                                    <img src={token.image} alt={token.symbol} className="w-8 h-8"/>
-                                    {token.symbol}
-                                </li>))}
-                            </ul>
-
-                        </div>
-
-                        <div className="hs-dropdown relative inline-flex">
-                            <button id="hs-dropdown-basic" type="button"
-                                    className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
-                                    <span
-                                        className="flex items-center gap-x-3.5 rounded-lg text-sm text-gray-800">
-                                        <img src={toChain!.image} alt={toChain!.symbol} className="w-8 h-8"/>
-                                        {toChain!.symbol}
-                                    </span>
-                                <svg className="hs-dropdown-open:rotate-180 w-4 h-4 text-gray-600"
-                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                     viewBox="0 0 24 24"
-                                     fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                                     strokeLinejoin="round">
-                                    <path d="m6 9 6 6 6-6"/>
-                                </svg>
-                            </button>
-
-                            <ul className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-md rounded-lg p-2"
-                                aria-labelledby="hs-dropdown-basic">
-                                {chainList.map((chain) => (<li key={chain.symbol} onClick={() => setToChain(chain)}
-                                                               className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100">
-                                    <img src={chain.image} alt={chain.symbol} className="w-8 h-8"/>
-                                    {chain.symbol}
-                                </li>))}
-                            </ul>
-
-                        </div>
-
-                    </div>
-                    <div className="mb-8 ml-3">
-                        <span className="text-3xl font-normal text-gray-800">0.00</span>
-                    </div>
-                </div>
                 <button type="button"
                         className="w-full mt-5 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-base font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
                     Connect Wallet
