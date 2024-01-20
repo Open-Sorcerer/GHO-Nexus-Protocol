@@ -11,7 +11,9 @@ contract DeploySourceContract is Script, Helper {
         address owner = 0xB9f9Af07fAd74C23F35CAeC708515782a15911Ba;
         vm.startBroadcast(deployerPrivateKey);
 
-        (address router, address linkToken, , ,,) = getConfigFromNetwork(network);
+        (address router, address linkToken, , , , ) = getConfigFromNetwork(
+            network
+        );
 
         SourceContract sourceContract = new SourceContract(
             owner,
@@ -33,4 +35,3 @@ contract DeploySourceContract is Script, Helper {
 // forge script ./script/deploySourceContract.s.sol:DeploySourceContract -vvv --broadcast --rpc-url ethereumSepolia --sig "run(uint8)" -- 0
 
 // forge script ./script/deploySourceContract.s.sol:DeploySourceContract -vvv --broadcast --rpc-url arbitrumSepolia --sig "run(uint8)" -- 3
-

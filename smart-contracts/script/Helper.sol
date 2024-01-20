@@ -120,15 +120,21 @@ contract Helper {
     address constant usdcBaseGoerli =
         0xF175520C52418dfE19C8098071a252da48Cd1C19;
 
+    // GHO Addresses
+    address constant ghoEthereumSepolia =
+        0xc4bF5CbDaBE595361438F8c6a187bDc330539c60;
+    address constant ghoArbitrumSepolia =
+        0xb13Cfa6f8B2Eed2C37fB00fF0c1A59807C585810;
+
     // Source Contract Addresses
     address constant sepoliaSourceContractAddr =
-        0x40541651b8Ad61e0BF60Daf20B924b21499AB7F1;
+        0xA2e6cf09DE7acedd4329eaE1F25D0Eb5478949C1;
     address constant arbitrumSourceContractAddr =
         0x781758FF2FcB9BBe5F47533ad5ae0E04982665eF;
 
     // Balance Contract Addresses
     address constant sepoliaBalanceAddr =
-        0x4d0dE8b8455F01Dabc34dDe820076a6CB7482ffB;
+        0x1FB29E8c8AE352C7eccEA326d569a3E5C5C0e7C8;
 
     constructor() {
         networks[SupportedNetworks.ETHEREUM_SEPOLIA] = "Ethereum Sepolia";
