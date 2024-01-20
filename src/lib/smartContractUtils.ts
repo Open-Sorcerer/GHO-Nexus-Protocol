@@ -1,9 +1,9 @@
+import { usePermit } from 'wagmi-permit'
 import GHOTokenABI from './GHOTokenABI.json'
-import tokenBridgeABI from './tokenBridgeABI.json'
-import { tokenBridgeEthSepoliaAddress, tokenBridgeArbSepoliaAddress } from './consts'
-
 import { sepoliaPublicClient } from './clients'
+import tokenBridgeABI from './tokenBridgeABI.json'
 import { simulateContract } from 'viem/_types/actions/public/simulateContract'
+import { tokenBridgeEthSepoliaAddress, tokenBridgeArbSepoliaAddress } from './consts'
 import {
 	useAccount,
 	useWalletClient,
@@ -23,7 +23,7 @@ import {
 
 const useBridge = () => {
 	const { address } = useAccount()
-	const walletClient = useWalletClient()
+	const { data: walletClient } = useWalletClient()
 	const publicClient = usePublicClient()
 
 	/// first call GHO Token Address
@@ -102,12 +102,32 @@ const useBridge = () => {
 
 	const { write: GhoEthSepoliaBridge } = useContractWrite(GhoEthSepoliaBridgeConfig)
 
+	/// permit functions
+
+	/// sign permit
+
+	const { signPermit, signature, error } = usePermit({
+		walletClient,
+		ownerAddress: address,
+		chainId: 11155111,
+		spenderAddress: tokenBridgeEthSepoliaAddress,
+		contractAddress: GhoTokenAddressEthSepolia,
+		deadline: BigInt(Math.floor(Date.now() / 1000) + 100_000),
+	})
+
 	const callBridge = async () => {
 		console.log('publicClient', await publicClient.getChainId())
 		console.log('EthSepoliaData', formatEther(GhoEthSepoliaAllowance as bigint))
 
 		// GhoEthSepoliaApproval?.()
-		GhoEthSepoliaBridge?.()
+		// GhoEthSepoliaBridge?.()
+		console.log(BigInt(Math.floor(Date.now() / 1000) + 100_000))
+		const permitSignature = await signPermit?.({
+			value: parseEther('1'),
+			deadline: BigInt(Math.floor(Date.now() / 1000) + 100_000),
+		})
+
+		console.log('permitSignature', permitSignature)
 	}
 	return { callBridge }
 }
