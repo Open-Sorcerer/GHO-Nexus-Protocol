@@ -3,6 +3,8 @@ Ethereum Sepolia SourceGateway Contract Address: 0xA1ad04b9240E9E632DE467bA8F85c
 Ethereum Sepolia Balance Contract Address: 0x4d0dE8b8455F01Dabc34dDe820076a6CB7482ffB
 Ethereum Sepolia BalanceDestination contract address: 0xA758dd34Afdbe348C986E59583542A91627cFa82
 
+Ethereum Sepolia PriceConverter Contract Address: 0x85Ad8b5865e05F3B4319Fe7Bf5a8Bf1128dD73B7
+
 
 ------------------
 
@@ -19,3 +21,33 @@ TokenBridge contract deployed on  Ethereum Sepolia with address:  0x42b70E6b8faD
 
 TokenBridge contract deployed on  Arbitrum Sepolia with address:
 0x942a156cd363CC04Eac8577a509D360eFb5453Fa
+
+
+
+-- Points to remember, also set 
+
+===============================================================================
+
+----------------------------------
+
+SourceContract contract deployed on  Ethereum Sepolia with address:  0xA2e6cf09DE7acedd4329eaE1F25D0Eb5478949C1
+
+SourceGateway contract deployed on  Ethereum Sepolia with address:  0xA92Fc4369E52e5ae251C86604bd1fDdF122ccD2c
+
+SourceContract contract deployed on Arbitrum Sepolia with address:
+0x980600E1ADA72f86d332Fb76D34D590c4Fa4BC1C
+
+SourceGateway contract deployed on Arbitrum Sepolia with address: 
+0x6bd9a5bc3e13cFcEB36776e601009c1c51FEF060
+
+-----------------------------------
+
+Balance contract deployed on Ethereum Sepolia with address:  0x1FB29E8c8AE352C7eccEA326d569a3E5C5C0e7C8
+
+BalanceDestination contract deployed on  Ethereum Sepolia with address:  0x41CD49f1Fb38b07E072a9C815c629A7A48b18061
+
+
+=================================================================================
+
+
+https://ccip.chain.link/msg/0xe66a63a47a9b9442b013856d8cbf9fb11ff216ef473ffb6b9d7b9cb645707f1b
