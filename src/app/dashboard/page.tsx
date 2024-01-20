@@ -100,122 +100,140 @@ const DashboardPage = () => {
 
                 {/* Your Supplies section */}
                 <div className="flex-1 w-1/4">
-                    <div className="widget-base px-10 py-5 mb-6">
-                        <div className="text-xl font-semibold">
+                    <div className="flex flex-col bg-white border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
+                        <div className="text-lg font-bold text-gray-800">
                             Your Supplies
                         </div>
-                        <div className="text-sm text-gray-400 mt-2">
+                        <div className="mt-1 text-xs font-medium uppercase text-gray-500">
                             List of assets that you are supplying to the protocol.
                         </div>
                     </div>
-                    <div className="widget-base px-10 py-5">
-                        <div className="flex justify-between">
-                            <p className="widget-title">Assets to supply</p>
-                            <div className="flex">
-                                <label className="group flex items-center gap-x-2">
-                                    <div className="flex items-end group-active:bg-gray-900/50">
-                                        <label className="relative cursor-pointer flex items-center gap-x-3">
-                                            <input className="checkbox-base" type="checkbox" checked={isShowZeroBalance}
-                                                   onChange={() => setIsShowZeroBalance(!isShowZeroBalance)}/>
-                                        </label>
-                                    </div>
-                                    <span className="cursor-pointer text-sm font-normal text-gray-300">Show assets with 0 balance</span></label>
+                    <div
+                        className="flex flex-col bg-white border shadow-sm rounded-xl">
+                        <div
+                            className="flex justify-between items-center bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-5">
+                            <p className="mt-1 text-sm font-semibold text-gray-500">
+                                Assets to supply
+                            </p>
+                            <div className="flex items-center group-active:bg-gray-900/50">
+                                <input
+                                    className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                                    type="checkbox" checked={isShowZeroBalance} id="hs-default-checkbox"
+                                    onChange={() => setIsShowZeroBalance(!isShowZeroBalance)}/>
+                                <label htmlFor="hs-default-checkbox"
+                                       className="text-sm text-gray-500 ms-3">Show assets with 0 balance</label>
                             </div>
                         </div>
-                        <div className="asset-table-base mt-6">
-                            <table className="w-full">
+                        <div className="p-1.5 min-w-full inline-block align-middle overflow-hidden mt-6">
+                            <table className="min-w-full divide-y divide-gray-200">
                                 <thead>
                                 <tr>
-                                    <th><span className="flex items-center gap-x-1">Asset &amp; chain</span></th>
-                                    <th className="text-center"><span
-                                        className="flex items-center justify-center gap-x-1">Wallet balance</span></th>
-                                    <th className="text-center"><span
-                                        className="flex items-center justify-center gap-x-1">APY</span></th>
-                                    <th className="text-center"><span
-                                        className="flex items-center justify-center gap-x-1">Can be collateral</span>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">Asset &amp; chain
                                     </th>
-                                    <th className="pr-6"></th>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">Wallet
+                                        balance
+                                    </th>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">APY
+                                    </th>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">Can
+                                        be collateral
+                                    </th>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">Action</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                {assetsData.map((asset, index) => (<tr key={index}>
-                                    <td className="pl-6">
-                                        <div className="flex items-center gap-x-2">
+                                <tbody className="divide-y divide-gray-200">
+                                {assetsData.map((asset, index) => (
+                                    <tr className="hover:bg-gray-100 " key={index}>
+                                        <td className="flex items-center gap-x-2 p-4 whitespace-nowrap text-sm font-medium text-gray-800">
                                             <img
                                                 src={`https://testnet.pike.finance/icons/crypto/${asset.img.toLowerCase()}`}
                                                 alt={`${asset.symbol} logo`}
                                                 className="h-6 w-6"
                                             />
-                                            <span className="text-base font-medium text-white">{asset.symbol}</span>
-                                        </div>
-                                    </td>
-                                    <td className="py-4 text-center"><span>{asset.balance}</span></td>
-                                    <td className="py-4 text-center"><span className="">{asset.apy}</span></td>
-                                    <td className="py-[23px]">
-                                        {asset.canBeCollateral ? (<div className="flex items-center justify-center">
-                                            <span className="bg-green-500 rounded-full h-2 w-2 mr-1"></span>
-                                            <span className="text-green-500 text-xs">Yes</span>
-                                        </div>) : (<div className="flex items-center justify-center">
-                                            <span className="bg-red-500 rounded-full h-2 w-2 mr-1"></span>
-                                            <span className="text-red-500 text-xs">No</span>
-                                        </div>)}
-                                    </td>
-                                    <td className="py-4 pr-6">
-                                        <button className="text-primary">Manage</button>
-                                    </td>
-                                </tr>))}
+                                            {asset.symbol}
+                                        </td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-medium text-gray-800">{asset.balance}</td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-medium text-gray-800">{asset.apy}</td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                                            {asset.canBeCollateral ? (<div className="flex items-center justify-center">
+                                                <span className="bg-green-500 rounded-full h-2 w-2 mr-1"></span>
+                                                <span className="text-green-500 text-xs">Yes</span>
+                                            </div>) : (<div className="flex items-center justify-center">
+                                                <span className="bg-red-500 rounded-full h-2 w-2 mr-1"></span>
+                                                <span className="text-red-500 text-xs">No</span>
+                                            </div>)}
+                                        </td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-medium">
+                                            <button className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none">Supply</button>
+                                        </td>
+                                    </tr>))}
                                 </tbody>
                             </table>
                         </div>
+
                     </div>
                 </div>
 
                 {/* Your Borrows section */}
                 <div className="flex-1 w-1/4">
-                    <div className="widget-base px-10 py-5 mb-6">
-                        <div className="text-xl font-semibold">
+                    <div className="flex flex-col bg-white border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
+                        <div className="text-lg font-bold text-gray-800">
                             Your Borrows
                         </div>
-                        <div className="text-sm text-gray-400 mt-2">
+                        <div className="mt-1 text-xs font-medium uppercase text-gray-500">
                             List of assets that you have borrowed from the protocol.
                         </div>
                     </div>
-                    <div className="widget-base px-10 py-5">
-                        <div className="flex justify-between">
-                            <p className="widget-title">Assets to borrow</p>
+
+                    <div
+                        className="flex flex-col bg-white border shadow-sm rounded-xl">
+                        <div
+                            className="bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-5">
+                            <p className="mt-1 text-sm font-semibold text-gray-500">
+                                Assets to borrow
+                            </p>
                         </div>
-                        <div className="asset-table-base mt-6">
-                            <table className="w-full">
+                        <div className="p-1.5 min-w-full inline-block align-middle overflow-hidden mt-6">
+                            <table className="min-w-full divide-y divide-gray-200">
                                 <thead>
                                 <tr>
-                                    <th><span className="flex items-center gap-x-1">Asset &amp; chain</span></th>
-                                    <th className="text-center"><span
-                                        className="flex items-center justify-center gap-x-1">Available</span></th>
-                                    <th className="text-center"><span
-                                        className="flex items-center justify-center gap-x-1">APY</span></th>
-                                    <th></th>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">Asset &amp; chain
+                                    </th>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">Available
+                                    </th>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">APY
+                                    </th>
+                                    <th scope="col"
+                                        className="p-3 text-start text-xs font-medium text-gray-500 uppercase">Action</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                {borrowsData.map((borrow, index) => (<tr key={index}>
-                                    <td className="pl-6">
-                                        <div className="flex items-center gap-x-2">
-                                            <img
-                                                src={`https://testnet.pike.finance/icons/crypto/${borrow.img.toLowerCase()}`}
-                                                alt={`${borrow.symbol} logo`}
-                                                className="h-6 w-6"
-                                            />
-                                            <span
-                                                className="text-base font-medium text-white">{borrow.symbol}</span>
-                                        </div>
-                                    </td>
-                                    <td className="py-4 text-center"><span
-                                        className="text-gray">{borrow.available}</span></td>
-                                    <td className="py-4 text-center"><span className="">{borrow.apy}</span></td>
-                                    <td className="py-4 pr-6">
-                                        <button className="text-primary">Repay</button>
-                                    </td>
-                                </tr>))}
+                                <tbody className="divide-y divide-gray-200">
+                                {borrowsData.map((borrow, index) => (
+                                    <tr className="hover:bg-gray-100" key={index}>
+                                        <td className="pl-6">
+                                            <div className="flex items-center gap-x-2">
+                                                <img
+                                                    src={`https://testnet.pike.finance/icons/crypto/${borrow.img.toLowerCase()}`}
+                                                    alt={`${borrow.symbol} logo`}
+                                                    className="h-6 w-6"
+                                                />
+                                                {borrow.symbol}
+                                            </div>
+                                        </td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-medium text-gray-800">{borrow.available}</td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-medium text-gray-800">{borrow.apy}</td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-medium">
+                                            <button className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none">Borrow</button>
+                                        </td>
+                                    </tr>))}
                                 </tbody>
                             </table>
                         </div>
