@@ -1,6 +1,8 @@
-import { createPublicClient, http } from 'viem'
+import { createConfig } from '@wagmi/core'
+import { createPublicClient, http, createWalletClient, custom } from 'viem'
 
 import { sepolia, arbitrumSepolia } from 'viem/chains'
+declare var window: any
 
 export const sepoliaPublicClient = createPublicClient({
 	chain: sepolia,
@@ -12,7 +14,11 @@ export const arbitrumSepoliaPublicClient = createPublicClient({
 	transport: http(),
 })
 
-// export const walletClient = createPublicClient({
-// 	chain: sepolia,
-// 	// transport:
-// })
+export const walletClient = createWalletClient({
+	chain: sepolia,
+	transport: custom(window.ethereum),
+})
+
+export const config = createConfig({
+	publicClient: sepoliaPublicClient,
+})

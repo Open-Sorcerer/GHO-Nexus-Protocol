@@ -1,15 +1,14 @@
-"use client"
-import React from 'react';
-
+'use client'
+import React from 'react'
 interface Token {
-    symbol: string;
-    image: string;
+	symbol: string
+	image: string
 }
 
 interface Chain {
-    symbol: string;
-    image: string;
-    alt: string;
+	symbol: string
+	image: string
+	alt: string
 }
 
 const tokenList = [{symbol: 'ETH', image: 'https://statics.mayan.finance/eth.png'}, {
@@ -245,5 +244,4 @@ const Bridge = () => {
             </div>
         </div>);
 };
-
-export default Bridge;
+export default Bridge

@@ -1,21 +1,22 @@
 import tokenBridgeABI from './tokenBridgeABI.json'
 import { tokenBridgeEthSepoliaAddress } from './consts'
 
-import { usePublicClient } from 'wagmi'
+import { getContract } from 'viem'
 import { sepoliaPublicClient } from './clients'
-import { getContract, WalletClient, createPublicClient } from 'viem'
+import { useAccount, useWalletClient } from 'wagmi'
+import { simulateContract } from 'viem/_types/actions/public/simulateContract'
 
 const useBridge = () => {
-	const ethSepoliaBridge = getContract({
-		address: tokenBridgeEthSepoliaAddress,
-		abi: tokenBridgeABI,
-		publicClient: sepoliaPublicClient,
-	})
+	const { address } = useAccount()
+	const walletClient = useWalletClient()
 
 	const callBridge = async () => {
-		const res = ethSepoliaBridge
-		console.log(res)
+		console.log('hello')
 	}
 
-	return { callBridge }
+	return {
+		callBridge,
+	}
 }
+
+export default useBridge
