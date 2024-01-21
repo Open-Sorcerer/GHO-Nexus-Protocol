@@ -10,7 +10,7 @@ import { ConnectKitProvider, SIWEConfig, SIWEProvider, getDefaultConfig } from '
 const config = createConfig(
 	getDefaultConfig({
 		appName: APP_NAME,
-		chains: [sepolia, baseSepolia, arbitrumSepolia, avalancheFuji, optimismSepolia],
+		chains: [sepolia, arbitrumSepolia],
 		infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
 		walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
 	})
