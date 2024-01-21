@@ -128,13 +128,13 @@ contract Helper {
 
     // Source Contract Addresses
     address constant sepoliaSourceContractAddr =
-        0xA2e6cf09DE7acedd4329eaE1F25D0Eb5478949C1;
+        0x17b3FfCd010e2f84d646b5Fd6b868952BB248f86;
     address constant arbitrumSourceContractAddr =
-        0x781758FF2FcB9BBe5F47533ad5ae0E04982665eF;
+        0x49530D2952a8CF46d3362fd2813d407a1bFb234D;
 
     // Balance Contract Addresses
     address constant sepoliaBalanceAddr =
-        0x1FB29E8c8AE352C7eccEA326d569a3E5C5C0e7C8;
+        0xa6d5194686b1468CaF4ECC5dBE83E8C30C547942;
 
     constructor() {
         networks[SupportedNetworks.ETHEREUM_SEPOLIA] = "Ethereum Sepolia";
