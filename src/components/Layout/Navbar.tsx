@@ -23,7 +23,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="flex w-full items-center justify-between p-4 lg:px-6 fixed top-0 z-50 bg-black/50">
+      <nav className="flex w-full items-center justify-between p-4 lg:px-6 fixed top-0 z-50 bg-black/80">
         <div className="block flex-none md:hidden">
           {/*<HamburgerMenu menu={menu} />*/}
         </div>

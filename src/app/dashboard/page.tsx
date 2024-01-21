@@ -30,7 +30,7 @@ const DashboardPage = () => {
     return (
         <div
             className="w-full h-fit z-0 flex flex-col justify-start items-center gap-10 relative py-24 px-24 overflow-y-scroll">
-            <div className="widget-base flex justify-center bg-white text-5xl p-4">
+            <div className="widget-base flex justify-center bg-white/95 text-5xl p-4">
                 <div className="flex items-center gap-12">
                     {/* Net worth */}
                     <div className="flex flex-col gap-y-1">
@@ -100,7 +100,7 @@ const DashboardPage = () => {
 
                 {/* Your Supplies section */}
                 <div className="flex-1 w-1/4">
-                    <div className="flex flex-col bg-white border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
+                    <div className="flex flex-col bg-white/95 border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
                         <div className="text-lg font-bold text-gray-800">
                             Your Supplies
                         </div>
@@ -109,7 +109,7 @@ const DashboardPage = () => {
                         </div>
                     </div>
                     <div
-                        className="flex flex-col bg-white border shadow-sm rounded-xl">
+                        className="flex flex-col bg-white/95 border shadow-sm rounded-xl">
                         <div
                             className="flex justify-between items-center bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-5">
                             <p className="mt-1 text-sm font-semibold text-gray-500">
@@ -181,7 +181,7 @@ const DashboardPage = () => {
 
                 {/* Your Borrows section */}
                 <div className="flex-1 w-1/4">
-                    <div className="flex flex-col bg-white border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
+                    <div className="flex flex-col bg-white/95 border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
                         <div className="text-lg font-bold text-gray-800">
                             Your Borrows
                         </div>
@@ -191,7 +191,7 @@ const DashboardPage = () => {
                     </div>
 
                     <div
-                        className="flex flex-col bg-white border shadow-sm rounded-xl">
+                        className="flex flex-col bg-white/95 border shadow-sm rounded-xl">
                         <div
                             className="bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-5">
                             <p className="mt-1 text-sm font-semibold text-gray-500">
