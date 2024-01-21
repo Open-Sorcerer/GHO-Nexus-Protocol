@@ -14,6 +14,7 @@ interface Chain {
 import useBridge from '@lib/smartContractUtils'
 import { useNetwork, useWalletClient } from 'wagmi'
 import { GhoTokenAddressEthSepolia } from '@lib/consts'
+import {parseEther} from "viem";
 
 const tokenList = [
 	{ symbol: 'ETH', image: 'https://statics.mayan.finance/eth.png' },
@@ -62,11 +63,11 @@ const chainList = [
 ]
 
 const Bridge = () => {
-	const { callBridge, checkingAllowance } = useBridge({ sendingAmount: 10000000000000000000n })
 
 	const { data: walletClient } = useWalletClient()
 	const [fromToken, setFromToken] = React.useState<Token>()
 	const [amount, setAmount] = React.useState<number>(0)
+	const { callBridge, checkingAllowance } = useBridge({ amount: parseEther(`${amount}`) })
 	const [fromChain, setFromChain] = React.useState<Chain>({
 		symbol: 'Ethereum',
 		image: 'https://statics.mayan.finance/assets/eth.png',
