@@ -12,6 +12,7 @@ interface Chain {
 }
 
 import useBridge from '@lib/smartContractUtils'
+import {useNetwork} from "wagmi";
 
 const tokenList = [
 	{ symbol: 'ETH', image: 'https://statics.mayan.finance/eth.png' },
@@ -75,6 +76,10 @@ const Bridge = () => {
 	})
 	const [isAnotherWallet, setIsAnotherWallet] = React.useState<boolean>(false)
 	const [toAddress, setToAddress] = React.useState<string>('')
+	const handleAction = async () => {
+
+	}
+
 	return (
 		<div className="w-full h-fit z-0 flex flex-col justify-start items-center gap-10 relative py-24 px-24 overflow-y-scroll">
 			<div className="w-7/12 h-full flex flex-col justify-evenly items-center">
@@ -334,7 +339,7 @@ const Bridge = () => {
 				</div>
 				<button
 					type="button"
-					onClick={() => callBridge()}
+					onClick={() => handleAction()}
 					className="w-full mt-5 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-base font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
 				>
 					Connect Wallet
