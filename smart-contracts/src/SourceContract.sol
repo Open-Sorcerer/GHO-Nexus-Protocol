@@ -16,6 +16,7 @@ contract SourceContract {
     error FAILED_TO_WITHDRAW();
     error NEED_TO_SEND_SOME_TOKENS();
     error TOO_MUCH_INTEREST();
+    error ENTER_YOUR_ADDRESS();
 
     address private immutable i_router;
     address private immutable i_link;
@@ -52,13 +53,19 @@ contract SourceContract {
         _;
     }
 
+    modifier sameUser(address _user) {
+        if (_user != msg.sender) revert ENTER_YOUR_ADDRESS();
+        _;
+    }
+
     // function to lend the tokens to the protocol
     function lendToken(
         address _token,
         uint256 _amount,
+        address _user,
         uint64 destinationChainSelector,
         address receiver // reciever contract address that implemented _ccipReceive function
-    ) public onlyAllowedTokens(_token) amountNotZero(_amount) {
+    ) public onlyAllowedTokens(_token) amountNotZero(_amount) sameUser(_user) {
         // Recieve token from the user
         bool receiveToken = IERC20(_token).transferFrom(
             msg.sender,
@@ -71,7 +78,8 @@ contract SourceContract {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: abi.encodeWithSignature(
-                "lend(address,uint256)",
+                "lend(address,adddress,uint256)",
+                _user,
                 _token,
                 _amount
             ),
@@ -99,16 +107,18 @@ contract SourceContract {
     function borrowTokenMessage(
         address _token,
         uint256 _amount,
+        address _user,
         uint64 destinationChainSelector,
         uint64 calledChainSelector, // enter chain selector on which this smart contract is deployed to
         address _receiver, // reciever contract address that implemented _ccipReceive function on destination chain
         address _calledReciever // reciever contract address that implemented _ccipReceive function on source chain
-    ) public onlyAllowedTokens(_token) amountNotZero(_amount) {
+    ) public onlyAllowedTokens(_token) amountNotZero(_amount) sameUser(_user) {
         // update and check the balance on balance contract using Chainlink CCIP
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
             data: abi.encodeWithSignature(
-                "borrow(address,uint256,uint64,address)",
+                "borrow(address,address,uint256,uint64,address)",
+                _user,
                 _token,
                 _amount,
                 calledChainSelector,
@@ -134,18 +144,23 @@ contract SourceContract {
         emit BorrowMessageSent(messageId);
     }
 
-    function borrowToken(address _token, uint256 _amount) public {
-        bool sent = IERC20(_token).transfer(msg.sender, _amount);
+    function borrowToken(
+        address _user,
+        address _token,
+        uint256 _amount
+    ) public {
+        bool sent = IERC20(_token).transfer(_user, _amount);
         if (!sent) revert FAILED_TO_BORROW();
         emit BorrowedToken(_token, _amount);
     }
 
     function rePayFullAmount(
+        address _user,
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
         address _receiver
-    ) public onlyAllowedTokens(_token) {
+    ) public onlyAllowedTokens(_token) sameUser(_user) {
         bool receiveToken = IERC20(_token).transferFrom(
             msg.sender,
             address(this),
@@ -156,7 +171,8 @@ contract SourceContract {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
             data: abi.encodeWithSignature(
-                "rePayFull(address,uint256)",
+                "rePayFull(address,address,uint256)",
+                _user,
                 _token,
                 _amount
             ),
@@ -182,17 +198,19 @@ contract SourceContract {
     }
 
     function removeLendMessage(
+        address _user,
         address _token,
         uint256 _amount,
         uint64 destinationChainSelector,
         uint64 calledChainSelector, // enter chain selector on which this smart contract is deployed to
         address _receiver,
         address _calledReciever // reciever contract address that implemented _ccipReceive function on source chain
-    ) public onlyAllowedTokens(_token) {
+    ) public onlyAllowedTokens(_token) sameUser(_user) {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
             data: abi.encodeWithSignature(
-                "removeLendBalance(address,uint256,uint64,address)",
+                "removeLendBalance(address,address,uint256,uint64,address)",
+                _user,
                 _token,
                 _amount,
                 calledChainSelector,
@@ -220,11 +238,12 @@ contract SourceContract {
     }
 
     function removeLend(
+        address _user,
         address _token,
         uint256 _amount
     ) public onlyAllowedTokens(_token) {
         bool sent = IERC20(_token).transfer(
-            msg.sender,
+            _user,
             ((_amount * lendInterestRate) / 100)
         );
         if (!sent) revert FAILED_TO_WITHDRAW();
