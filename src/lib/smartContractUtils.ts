@@ -120,14 +120,14 @@ const useBridge = () => {
 		console.log('EthSepoliaData', formatEther(GhoEthSepoliaAllowance as bigint))
 
 		// GhoEthSepoliaApproval?.()
-		// GhoEthSepoliaBridge?.()
-		console.log(BigInt(Math.floor(Date.now() / 1000) + 100_000))
-		const permitSignature = await signPermit?.({
-			value: parseEther('1'),
-			deadline: BigInt(Math.floor(Date.now() / 1000) + 100_000),
-		})
+		GhoEthSepoliaBridge?.()
+		// console.log(BigInt(Math.floor(Date.now() / 1000) + 100_000))
+		// const permitSignature = await signPermit?.({
+		// 	value: parseEther('1'),
+		// 	deadline: BigInt(Math.floor(Date.now() / 1000) + 100_000),
+		// })
 
-		console.log('permitSignature', permitSignature)
+		// console.log('permitSignature', permitSignature)
 	}
 	return { callBridge }
 }
