@@ -10,8 +10,8 @@ SourceGateway contract deployed on  Ethereum Sepolia with address:  0x53D7E98B5a
 
 SourceContract contract deployed on  Arbitrum Sepolia with address:  0x49530D2952a8CF46d3362fd2813d407a1bFb234D
 
-SourceGateway contract deployed on  Arbitrum Sepolia with address:  0x88d98Ae4Bb2e60f1f2817CE4756BE03BBa86bCb7
-
+SourceGateway contract deployed on  Arbitrum Sepolia with address: 
+0xf2482357468C08B174988772066bD6581864bB41
 
 ------------------------------------------
 
