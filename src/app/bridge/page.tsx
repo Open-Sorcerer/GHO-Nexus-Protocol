@@ -11,30 +11,17 @@ interface Chain {
 	alt: string
 }
 
+import { parseEther } from 'viem'
 import useBridge from '@lib/smartContractUtils'
-import { useNetwork, useWalletClient } from 'wagmi'
 import { GhoTokenAddressEthSepolia } from '@lib/consts'
-import {parseEther} from "viem";
+import { useAccount, useNetwork, useWalletClient } from 'wagmi'
 
 const tokenList = [
-	{ symbol: 'ETH', image: 'https://statics.mayan.finance/eth.png' },
+	{ symbol: 'mockEth', image: 'https://statics.mayan.finance/eth.png' },
 	{
-		symbol: 'SOL',
-		image: 'https://statics.mayan.finance/SOL.png',
+		symbol: 'GHO',
+		image: 'https://statics.mayan.finance/SOL.png', // change this to GHO
 	},
-	{
-		symbol: 'PYTH',
-		image: 'https://assets.coingecko.com/coins/images/31924/small/Pyth_Logomark_%281%29.png?1696530732',
-	},
-	{
-		symbol: 'WBTC',
-		image: 'https://assets.coingecko.com/coins/images/7598/small/wrapped_bitcoin_wbtc.png?1548822744',
-	},
-	{
-		symbol: 'BSOL',
-		image: 'https://assets.coingecko.com/coins/images/26636/small/blazesolana.png?1659328728',
-	},
-	{ symbol: 'BONK', image: 'https://assets.coingecko.com/coins/images/28600/small/bonk.jpg?1672304290' },
 ]
 
 const chainList = [
@@ -63,11 +50,9 @@ const chainList = [
 ]
 
 const Bridge = () => {
-
 	const { data: walletClient } = useWalletClient()
 	const [fromToken, setFromToken] = React.useState<Token>()
 	const [amount, setAmount] = React.useState<number>(0)
-	const { callBridge, checkingAllowance } = useBridge({ amount: BigInt(amount) })
 	const [fromChain, setFromChain] = React.useState<Chain>({
 		symbol: 'Ethereum',
 		image: 'https://statics.mayan.finance/assets/eth.png',
@@ -79,14 +64,31 @@ const Bridge = () => {
 		alt: 'Solana',
 	})
 	const [isAnotherWallet, setIsAnotherWallet] = React.useState<boolean>(false)
-	const [toAddress, setToAddress] = React.useState<string>('')
+	const currentUser = useAccount()
+	const [toAddress, setToAddress] = React.useState<string>(currentUser.address!)
+	const { callBridge, checkingAllowance, sendAllowanceTransaction, sendBridgeTransaction } = useBridge({
+		amount: BigInt(amount * 10 ** 18),
+		toChain,
+		fromToken,
+		toAddress,
+	})
 	const handleAction = async () => {
-		await callBridge()
-		console.log('Bridge called')
-		console.log(walletClient?.chain.id)
+		// await callBridge()
+		// console.log('Bridge called')
 		let currentChainId = String(walletClient?.chain.id)
 
-		let allowanceAmount = await checkingAllowance(currentChainId, GhoTokenAddressEthSepolia) // tokenAddress needs to be variable
+		// let allowanceAmount = await checkingAllowance(currentChainId, fromToken?.symbol!) // tokenAddress needs to be variable
+		// console.log('allowanceAmount', allowanceAmount)
+
+		// if (parseFloat(allowanceAmount) < amount) {
+		// 	console.log('allowanceAmount is less than amount')
+		// 	await sendAllowanceTransaction(currentChainId, fromToken?.symbol!)
+		// 	console.log('Waiting for approval')
+		// }
+
+		// console.log('sending bridge transaction')
+
+		await sendBridgeTransaction(currentChainId, fromToken?.symbol!)
 	}
 
 	return (

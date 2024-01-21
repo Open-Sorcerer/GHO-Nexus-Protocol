@@ -14,3 +14,5 @@ export const chainIdBaseGoerli = 5790810961207155433n
 
 export const GhoTokenAddressEthSepolia = '0xc4bF5CbDaBE595361438F8c6a187bDc330539c60'
 export const GhoTokenAddressArbSepolia = '0xb13Cfa6f8B2Eed2C37fB00fF0c1A59807C585810'
+export const BnMTokenAddressEthSepolia = '0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05'
+export const BnMTokenAddressArbSepolia = '0xA8C0c11bf64AF62CDCA6f93D3769B88BdD7cb93D'

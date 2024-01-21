@@ -10,6 +10,8 @@ import {
 	useWalletClient,
 } from 'wagmi'
 import {
+	BnMTokenAddressArbSepolia,
+	BnMTokenAddressEthSepolia,
 	chainIdArbitrumSepolia,
 	chainIdEthereumSepolia,
 	GhoTokenAddressArbSepolia,
@@ -35,6 +37,20 @@ const useBridge = (props: any) => {
 		args: [address, tokenBridgeArbSepoliaAddress],
 	})
 
+	const { data: BnMArbSepoliaAllowance } = useContractRead({
+		address: BnMTokenAddressArbSepolia,
+		abi: GHOTokenABI,
+		functionName: 'allowance',
+		args: [address, tokenBridgeArbSepoliaAddress],
+	})
+
+	const { data: BnMEthSepoliaAllowance } = useContractRead({
+		address: BnMTokenAddressEthSepolia,
+		abi: GHOTokenABI,
+		functionName: 'allowance',
+		args: [address, tokenBridgeEthSepoliaAddress],
+	})
+
 	const { data: GhoEthSepoliaAllowance } = useContractRead({
 		address: GhoTokenAddressEthSepolia,
 		abi: GHOTokenABI,
@@ -53,11 +69,23 @@ const useBridge = (props: any) => {
 		functionName: 'approve',
 		args: [
 			tokenBridgeArbSepoliaAddress, // giving spending rights to the bridge
-			2000000000000000000n,
+			props?.amount,
 		], // 1 GHO
 	})
 
 	const { write: GhoArbSepoliaApproval } = useContractWrite(GhoArbSepoliaApprovalConfig)
+
+	const { config: BnMArbSepoliaApprovalConfig } = usePrepareContractWrite({
+		address: BnMTokenAddressArbSepolia,
+		abi: GHOTokenABI,
+		functionName: 'approve',
+		args: [
+			tokenBridgeArbSepoliaAddress, // giving spending rights to the bridge
+			props?.amount,
+		], // 1 GHO
+	})
+
+	const { write: BnMArbSepoliaApproval } = useContractWrite(BnMArbSepoliaApprovalConfig)
 
 	const { config: GhoEthSepoliaApprovalConfig } = usePrepareContractWrite({
 		address: GhoTokenAddressEthSepolia,
@@ -65,11 +93,23 @@ const useBridge = (props: any) => {
 		functionName: 'approve',
 		args: [
 			tokenBridgeEthSepoliaAddress, // giving spending rights to the bridge
-			props?.sendingAmount as bigint, // 1 GHO
+			props?.amount, // 1 GHO
 		], // 1 GHO, change to variable
 	})
 
 	const { write: GhoEthSepoliaApproval } = useContractWrite(GhoEthSepoliaApprovalConfig)
+
+	const { config: BnMEthSepoliaApprovalConfig } = usePrepareContractWrite({
+		address: BnMTokenAddressEthSepolia,
+		abi: GHOTokenABI,
+		functionName: 'approve',
+		args: [
+			tokenBridgeEthSepoliaAddress, // giving spending rights to the bridge
+			props?.amount, // 1 GHO
+		], // 1 GHO, change to variable
+	})
+
+	const { write: BnMEthSepoliaApproval } = useContractWrite(BnMEthSepoliaApprovalConfig)
 
 	/// Call Bridge function
 
@@ -81,11 +121,25 @@ const useBridge = (props: any) => {
 			chainIdEthereumSepolia, // sending to Ethereum Sepolia
 			address, // receiver address
 			GhoTokenAddressArbSepolia, // source chain token address (Arbitrum Sepolia)
-			1000000000000000000n, // amount
-		], // 1 GHO, change to variable
+			props?.amount, // amount
+		],
 	})
 
 	const { write: GhoArbSepoliaBridge, data } = useContractWrite(GhoArbSepoliaBridgeConfig)
+
+	const { config: BnMArbSepoliaBridgeConfig } = usePrepareContractWrite({
+		address: tokenBridgeArbSepoliaAddress,
+		abi: tokenBridgeABI,
+		functionName: 'transferTokens',
+		args: [
+			chainIdEthereumSepolia, // sending to Ethereum Sepolia
+			address, // receiver address
+			BnMTokenAddressArbSepolia, // source chain token address (Arbitrum Sepolia)
+			props?.amount, // amount
+		],
+	})
+
+	const { write: BnMArbSepoliaBridge } = useContractWrite(BnMArbSepoliaBridgeConfig)
 
 	const { config: GhoEthSepoliaBridgeConfig } = usePrepareContractWrite({
 		address: tokenBridgeEthSepoliaAddress,
@@ -95,11 +149,30 @@ const useBridge = (props: any) => {
 			chainIdArbitrumSepolia, // sending to Arbitrum Sepolia
 			address, // receiver address
 			GhoTokenAddressEthSepolia, // source chain token address (Ethereum Sepolia)
-			1000000000000000000n, // amount
+			props?.amount, // amount
 		], // 1 GHO, change to variable
 	})
 
-	const { write: GhoEthSepoliaBridge } = useContractWrite(GhoEthSepoliaBridgeConfig)
+	const {
+		write: GhoEthSepoliaBridge,
+		data: GhoEthSepoliaBridgeData,
+		isSuccess,
+		isLoading,
+	} = useContractWrite(GhoEthSepoliaBridgeConfig)
+
+	const { config: BnMEthSepoliaBridgeConfig } = usePrepareContractWrite({
+		address: tokenBridgeEthSepoliaAddress,
+		abi: tokenBridgeABI,
+		functionName: 'transferTokens',
+		args: [
+			chainIdArbitrumSepolia, // sending to Arbitrum Sepolia
+			address, // receiver address
+			BnMTokenAddressEthSepolia, // source chain token address (Ethereum Sepolia)
+			props?.amount, // amount
+		], // 1 GHO, change to variable
+	})
+
+	const { write: BnMEthSepoliaBridge } = useContractWrite(BnMEthSepoliaBridgeConfig)
 
 	/// permit functions
 
@@ -115,7 +188,7 @@ const useBridge = (props: any) => {
 	})
 
 	const callBridge = async () => {
-		console.log(props.sendingAmount)
+		console.log(props.amount)
 		console.log('publicClient', await publicClient.getChainId())
 		console.log('EthSepoliaData', formatEther(GhoEthSepoliaAllowance as bigint))
 
@@ -130,27 +203,49 @@ const useBridge = (props: any) => {
 		// console.log('permitSignature', permitSignature)
 	}
 
-	const checkingAllowance = async (chainId: string, tokenAddress: string): Promise<string> => {
+	const checkingAllowance = async (chainId: string, tokenName: string): Promise<string> => {
 		let allowanceAmount
-		if (chainId === '11155111') {
+		if (chainId === '11155111' && tokenName === 'GHO') {
 			allowanceAmount = GhoEthSepoliaAllowance
 			console.log('allowanceAmount', allowanceAmount)
-		} else if (chainId === '421614') {
+		} else if (chainId === '11155111' && tokenName === 'mockEth') {
+			allowanceAmount = BnMEthSepoliaAllowance
+			console.log('allowanceAmount', allowanceAmount)
+		} else if (chainId === '421614' && tokenName === 'GHO') {
 			allowanceAmount = GhoArbSepoliaAllowance
+			console.log('allowanceAmount', allowanceAmount)
+		} else if (chainId === '421614' && tokenName === 'mockEth') {
+			allowanceAmount = BnMArbSepoliaAllowance
 			console.log('allowanceAmount', allowanceAmount)
 		}
 		return formatEther(allowanceAmount as bigint)
 	}
 
-	const sendAllowanceTransaction = async (chain: string, amount: bigint) => {
-		if (chain === '11155111') {
+	const sendAllowanceTransaction = async (chainId: string, tokenName: string) => {
+		if (chainId === '11155111' && tokenName === 'GHO') {
 			GhoEthSepoliaApproval?.()
-		} else if (chain === '421614') {
+		} else if (chainId === '11155111' && tokenName === 'mockEth') {
+			BnMEthSepoliaApproval?.()
+		} else if (chainId === '421614' && tokenName === 'GHO') {
 			GhoArbSepoliaApproval?.()
+		} else if (chainId === '421614' && tokenName === 'mockEth') {
+			BnMArbSepoliaApproval?.()
 		}
 	}
 
-	return { callBridge, checkingAllowance, sendAllowanceTransaction }
+	const sendBridgeTransaction = async (chainId: string, tokenName: string) => {
+		if (chainId === '11155111' && tokenName === 'GHO') {
+			GhoEthSepoliaBridge?.()
+		} else if (chainId === '11155111' && tokenName === 'mockEth') {
+			BnMEthSepoliaBridge?.()
+		} else if (chainId === '421614' && tokenName === 'GHO') {
+			GhoArbSepoliaBridge?.()
+		} else if (chainId === '421614' && tokenName === 'mockEth') {
+			BnMArbSepoliaBridge?.()
+		}
+	}
+
+	return { callBridge, checkingAllowance, sendAllowanceTransaction, sendBridgeTransaction }
 }
 
 export default useBridge
