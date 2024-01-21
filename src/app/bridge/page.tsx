@@ -94,7 +94,7 @@ const Bridge = () => {
 	return (
 		<div className="w-full h-fit z-0 flex flex-col justify-start items-center gap-10 relative py-24 px-24 overflow-y-scroll">
 			<div className="w-7/12 h-full flex flex-col justify-evenly items-center">
-				<div className="w-full h-full flex flex-col bg-white border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
+				<div className="w-full h-full flex flex-col bg-white/95 border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
 					<div className="w-full h-full flex flex-row justify-between items-center gap-16 mb-8">
 						<div className="w-5/12 h-full flex flex-col justify-between items-start gap-3">
 							{/* From Chain */}
