@@ -61,7 +61,7 @@ const chainList = [
 ]
 
 const Bridge = () => {
-	const { callBridge } = useBridge()
+	const { callBridge } = useBridge(1000000000000000000n);
 	const [fromToken, setFromToken] = React.useState<Token>()
 	const [amount, setAmount] = React.useState<number>(0)
 	const [fromChain, setFromChain] = React.useState<Chain>({
@@ -77,7 +77,8 @@ const Bridge = () => {
 	const [isAnotherWallet, setIsAnotherWallet] = React.useState<boolean>(false)
 	const [toAddress, setToAddress] = React.useState<string>('')
 	const handleAction = async () => {
-
+		await callBridge();
+		console.log('Bridge called')
 	}
 
 	return (

@@ -20,7 +20,7 @@ import {
 
 import {formatEther} from 'viem'
 
-const useBridge = () => {
+const useBridge = (props: any) => {
     const {address} = useAccount()
     const {data: walletClient} = useWalletClient()
     const publicClient = usePublicClient()
@@ -65,7 +65,7 @@ const useBridge = () => {
         functionName: 'approve',
         args: [
             tokenBridgeEthSepoliaAddress, // giving spending rights to the bridge
-            2000000000000000000n, // 1 GHO
+            props?.amount, // 1 GHO
         ], // 1 GHO, change to variable
     })
 
@@ -118,8 +118,8 @@ const useBridge = () => {
         console.log('publicClient', await publicClient.getChainId())
         console.log('EthSepoliaData', formatEther(GhoEthSepoliaAllowance as bigint))
 
-        // GhoEthSepoliaApproval?.()
-        GhoEthSepoliaBridge?.()
+        GhoEthSepoliaApproval?.()
+        // GhoEthSepoliaBridge?.()
         // console.log(BigInt(Math.floor(Date.now() / 1000) + 100_000))
         // const permitSignature = await signPermit?.({
         // 	value: parseEther('1'),
