@@ -59,7 +59,6 @@ contract TokenBridge is OwnerIsCreator {
         uint256 _amount
     )
         external
-        onlyOwner
         onlyAllowlistedChain(_destinationChainSelector)
         returns (bytes32 messageId)
     {
@@ -182,7 +181,6 @@ contract TokenBridge is OwnerIsCreator {
     )
         public
         view
-        onlyOwner
         onlyAllowlistedChain(_destinationChainSelector)
         returns (uint256 fees)
     {
