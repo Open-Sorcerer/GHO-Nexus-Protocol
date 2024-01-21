@@ -67,7 +67,7 @@ const Bridge = () => {
 	const { data: walletClient } = useWalletClient()
 	const [fromToken, setFromToken] = React.useState<Token>()
 	const [amount, setAmount] = React.useState<number>(0)
-	const { callBridge, checkingAllowance } = useBridge({ amount: parseEther(`${amount}`) })
+	const { callBridge, checkingAllowance } = useBridge({ amount: BigInt(amount) })
 	const [fromChain, setFromChain] = React.useState<Chain>({
 		symbol: 'Ethereum',
 		image: 'https://statics.mayan.finance/assets/eth.png',
