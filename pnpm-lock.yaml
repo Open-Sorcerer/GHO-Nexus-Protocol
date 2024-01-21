@@ -56,6 +56,9 @@ dependencies:
   wagmi:
     specifier: ^1.4.13
     version: 1.4.13(@types/react@18.2.6)(encoding@0.1.13)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.4)(viem@1.21.4)
+  wagmi-permit:
+    specifier: ^1.0.19
+    version: 1.0.19(react@18.2.0)(viem@1.21.4)(wagmi@1.4.13)
 
 devDependencies:
   '@tailwindcss/forms':
@@ -5944,6 +5947,18 @@ packages:
       - bufferutil
       - utf-8-validate
       - zod
+    dev: false
+
+  /wagmi-permit@1.0.19(react@18.2.0)(viem@1.21.4)(wagmi@1.4.13):
+    resolution: {integrity: sha512-FNrZkr3b7FnhnkPKlXHR2jidlI39Zv/4jOqv3bK6jnCSGQAeIeXHE1WGS4Ab+zETH4h/LB2qAHTCKRLtsClsag==}
+    peerDependencies:
+      react: '*'
+      viem: 1.x
+      wagmi: 1.x
+    dependencies:
+      react: 18.2.0
+      viem: 1.21.4(typescript@5.0.4)
+      wagmi: 1.4.13(@types/react@18.2.6)(encoding@0.1.13)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.4)(viem@1.21.4)
     dev: false
 
   /wagmi@1.4.13(@types/react@18.2.6)(encoding@0.1.13)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.4)(viem@1.21.4):

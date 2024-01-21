@@ -11,27 +11,17 @@ interface Chain {
 	alt: string
 }
 
+import { parseEther } from 'viem'
 import useBridge from '@lib/smartContractUtils'
+import { GhoTokenAddressEthSepolia } from '@lib/consts'
+import { useAccount, useNetwork, useWalletClient } from 'wagmi'
 
 const tokenList = [
-	{ symbol: 'ETH', image: 'https://statics.mayan.finance/eth.png' },
+	{ symbol: 'mockEth', image: 'https://statics.mayan.finance/eth.png' },
 	{
-		symbol: 'SOL',
-		image: 'https://statics.mayan.finance/SOL.png',
+		symbol: 'GHO',
+		image: 'https://statics.mayan.finance/SOL.png', // change this to GHO
 	},
-	{
-		symbol: 'PYTH',
-		image: 'https://assets.coingecko.com/coins/images/31924/small/Pyth_Logomark_%281%29.png?1696530732',
-	},
-	{
-		symbol: 'WBTC',
-		image: 'https://assets.coingecko.com/coins/images/7598/small/wrapped_bitcoin_wbtc.png?1548822744',
-	},
-	{
-		symbol: 'BSOL',
-		image: 'https://assets.coingecko.com/coins/images/26636/small/blazesolana.png?1659328728',
-	},
-	{ symbol: 'BONK', image: 'https://assets.coingecko.com/coins/images/28600/small/bonk.jpg?1672304290' },
 ]
 
 const chainList = [
@@ -60,7 +50,7 @@ const chainList = [
 ]
 
 const Bridge = () => {
-	const { callBridge } = useBridge()
+	const { data: walletClient } = useWalletClient()
 	const [fromToken, setFromToken] = React.useState<Token>()
 	const [amount, setAmount] = React.useState<number>(0)
 	const [fromChain, setFromChain] = React.useState<Chain>({
@@ -74,11 +64,37 @@ const Bridge = () => {
 		alt: 'Solana',
 	})
 	const [isAnotherWallet, setIsAnotherWallet] = React.useState<boolean>(false)
-	const [toAddress, setToAddress] = React.useState<string>('')
+	const currentUser = useAccount()
+	const [toAddress, setToAddress] = React.useState<string>(currentUser.address!)
+	const { callBridge, checkingAllowance, sendAllowanceTransaction, sendBridgeTransaction } = useBridge({
+		amount: BigInt(amount * 10 ** 18),
+		toChain,
+		fromToken,
+		toAddress,
+	})
+	const handleAction = async () => {
+		// await callBridge()
+		// console.log('Bridge called')
+		let currentChainId = String(walletClient?.chain.id)
+
+		let allowanceAmount = await checkingAllowance(currentChainId, fromToken?.symbol!) // tokenAddress needs to be variable
+		console.log('allowanceAmount', allowanceAmount)
+
+		if (parseFloat(allowanceAmount) < amount) {
+			console.log('allowanceAmount is less than amount')
+			await sendAllowanceTransaction(currentChainId, fromToken?.symbol!)
+			console.log('Waiting for approval')
+		}
+
+		console.log('sending bridge transaction')
+
+		// await sendBridgeTransaction(currentChainId, fromToken?.symbol!)
+	}
+
 	return (
 		<div className="w-full h-fit z-0 flex flex-col justify-start items-center gap-10 relative py-24 px-24 overflow-y-scroll">
 			<div className="w-7/12 h-full flex flex-col justify-evenly items-center">
-				<div className="w-full h-full flex flex-col bg-white border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
+				<div className="w-full h-full flex flex-col bg-white/95 border shadow-sm rounded-xl py-3 px-4 md:py-4 md:px-5 mb-5">
 					<div className="w-full h-full flex flex-row justify-between items-center gap-16 mb-8">
 						<div className="w-5/12 h-full flex flex-col justify-between items-start gap-3">
 							{/* From Chain */}
@@ -334,7 +350,7 @@ const Bridge = () => {
 				</div>
 				<button
 					type="button"
-					onClick={() => callBridge()}
+					onClick={() => handleAction()}
 					className="w-full mt-5 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-base font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
 				>
 					Connect Wallet
