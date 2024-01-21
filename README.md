@@ -1,7 +1,7 @@
 # GHO Nexus Protocol
 ## Interchain Credit System Leveraging GHO and Chainlink CCIP
 
-Welcome to GHO Nexus Protocol – a cutting-edge DeFi lending and borrowing platform designed for the new era of cryptocurrency. Our platform facilitates efficient management of digital assets across multiple blockchain networks, offering a unique, seamless experience.
+Welcome to GHO Nexus Protocol – a cutting-edge DeFi lending and borrowing platform designed for the new era of cryptocurrency. Our platform facilitates the efficient management of digital assets across multiple blockchain networks, offering a unique, seamless experience. GHO Nexus Protocol is also the First GHO Bridge.
 
 ## Comprehensive Lending and Borrowing Ecosystem
 GHO Nexus Protocol transcends a typical platform; it's an ecosystem enabling users to lend and borrow digital assets like GHO and Ethereum (ETH) across various blockchains. This feature enhances the liquidity and utility of your digital holdings.
@@ -33,7 +33,7 @@ Join GHO Nexus Protocol and explore the vast potential of DeFi. Bridge the block
 # Smart Contract Architecture
 
 ## GHO Bridge
-Users can interact with our dApp, select their desired destination blockchain, and specify the EOA or smart contract address for token transfer. Leveraging Chainlink CCIP, we facilitate the transfer of GHO and BnM tokens. Like any ERC20 token, users must approve the token, and our dApp streamlines this process.
+Users can interact with our dApp, select their desired destination blockchain, and specify the EOA or smart contract address for token transfer. Leveraging Chainlink CCIP, we facilitate the transfer of GHO and BnM tokens. Like any ERC20 token, users must approve the token, and our dApp streamlines this process. TokenBridge.sol is used for Bridging.
 
 ![WhatsApp Image 2024-01-21 at 20 09 44_05c9b909](https://github.com/Open-Sorcerer/GHOtela/assets/60979345/bedbee17-1555-49d4-8f0d-b8ba07cd40e0)
 
@@ -59,6 +59,27 @@ Users deposit tokens into `SourceContract`, which, through Chainlink CCIP, trans
 Users can borrow up to 80% of their lending amount in any token. The borrowing process involves the `SourceContract` and Chainlink CCIP, with the `Balance` contract verifying eligibility and instructing `SourceContract` via `SourceGateway` to disburse funds.
 
 ![WhatsApp Image 2024-01-21 at 20 11 32_e45676f4](https://github.com/Open-Sorcerer/GHOtela/assets/60979345/faedf067-0ed1-4135-b474-7d8082d9d157)
+
+
+# Smart Contract Addresses
+
+## GHO Bridge
+TokenBridge contract deployed on Ethereum Sepolia with address:  0xfb4F2aed17a466f78587612751c0d21d4755BF57
+
+TokenBridge contract deployed on Arbritium Sepolia with address: 0xaB0Ce2237830Ad713b3134e5307521f20E1C0ff6
+
+## Lending and Borrowing
+SourceContract contract deployed on Arbitrum Sepolia with address: 0x980600E1ADA72f86d332Fb76D34D590c4Fa4BC1C
+
+SourceGateway contract deployed on Arbitrum Sepolia with address: 0x6bd9a5bc3e13cFcEB36776e601009c1c51FEF060
+
+SourceContract contract deployed on Ethereum Sepolia with address:  0xA2e6cf09DE7acedd4329eaE1F25D0Eb5478949C1
+
+SourceGateway contract deployed on  Ethereum Sepolia with address:  0xA92Fc4369E52e5ae251C86604bd1fDdF122ccD2c
+
+Balance contract deployed on Ethereum Sepolia with address:  0x1FB29E8c8AE352C7eccEA326d569a3E5C5C0e7C8
+
+BalanceDestination contract deployed on Ethereum Sepolia with address:  0x41CD49f1Fb38b07E072a9C815c629A7A48b18061
 
 
 
