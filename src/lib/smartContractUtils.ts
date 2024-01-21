@@ -221,6 +221,22 @@ const useBridge = (props: any) => {
 
 	const { write: LendingContractWrite } = useContractWrite(LendingContractConfig)
 
+	const approvingGHO = async (chainId: string) => {
+		if (chainId === '421614') {
+			LendingContractApproval?.()
+		} else {
+			console.log('wrong chain')
+		}
+	}
+
+	const lendingGHO = async (chainId: string) => {
+		if (chainId === '421614') {
+			LendingContractWrite?.()
+		} else {
+			console.log('wrong chain')
+		}
+	}
+
 	const callBridge = async () => {
 		console.log('Approval', LendingContractConfig)
 
@@ -284,7 +300,7 @@ const useBridge = (props: any) => {
 		}
 	}
 
-	return { callBridge, checkingAllowance, sendAllowanceTransaction, sendBridgeTransaction }
+	return { callBridge, checkingAllowance, sendAllowanceTransaction, sendBridgeTransaction, lendingGHO, approvingGHO }
 }
 
 export default useBridge

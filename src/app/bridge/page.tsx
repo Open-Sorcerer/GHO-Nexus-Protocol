@@ -20,32 +20,13 @@ const tokenList = [
 	{ symbol: 'mockEth', image: 'https://statics.mayan.finance/eth.png' },
 	{
 		symbol: 'GHO',
-		image: 'https://statics.mayan.finance/SOL.png', // change this to GHO
+		image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXCklVeZwUDdGVnF5br6tra6RBzfsrtrzhF5TQKuPITvI1Aia1CoMtKi6mWKUm8DDK2y4&usqp=CAU', // change this to GHO
 	},
 ]
 
 const chainList = [
-	{
-		symbol: 'Solana',
-		image: 'https://statics.mayan.finance/assets/SOL.png',
-		alt: 'Solana',
-	},
 	{ symbol: 'Ethereum', image: 'https://statics.mayan.finance/assets/eth.png', alt: 'Ethereum' },
-	{
-		symbol: 'BSC',
-		image: 'https://statics.mayan.finance/assets/bsc.png',
-		alt: 'BSC',
-	},
-	{
-		symbol: 'Polygon',
-		image: 'https://statics.mayan.finance/assets/polygon.png',
-		alt: 'Polygon',
-	},
-	{
-		symbol: 'Avalanche',
-		image: 'https://statics.mayan.finance/assets/avax-icon.png',
-		alt: 'Avalanche',
-	},
+
 	{ symbol: 'Arbitrum', image: 'https://cdn.mayan.finance/arbitrum-logo.png', alt: 'Arbitrum' },
 ]
 
@@ -59,9 +40,9 @@ const Bridge = () => {
 		alt: 'Ethereum',
 	})
 	const [toChain, setToChain] = React.useState<Chain>({
-		symbol: 'Solana',
-		image: 'https://statics.mayan.finance/assets/SOL.png',
-		alt: 'Solana',
+		symbol: 'Arbitrum',
+		image: 'https://cdn.mayan.finance/arbitrum-logo.png',
+		alt: 'Arbitrum',
 	})
 	const [isAnotherWallet, setIsAnotherWallet] = React.useState<boolean>(false)
 	const currentUser = useAccount()
@@ -73,22 +54,22 @@ const Bridge = () => {
 		toAddress,
 	})
 	const handleAction = async () => {
-		await callBridge()
-		// // console.log('Bridge called')
-		// let currentChainId = String(walletClient?.chain.id)
+		let currentChainId = String(walletClient?.chain.id)
 
-		// let allowanceAmount = await checkingAllowance(currentChainId, fromToken?.symbol!) // tokenAddress needs to be variable
-		// console.log('allowanceAmount', allowanceAmount)
+		let allowanceAmount = await checkingAllowance(currentChainId, fromToken?.symbol!) // tokenAddress needs to be variable
+		console.log('allowanceAmount', allowanceAmount)
 
-		// if (parseFloat(allowanceAmount) < amount) {
-		// 	console.log('allowanceAmount is less than amount')
-		// 	await sendAllowanceTransaction(currentChainId, fromToken?.symbol!)
-		// 	console.log('Waiting for approval')
-		// }
+		if (parseFloat(allowanceAmount) < amount) {
+			console.log('allowanceAmount is less than amount')
+			await sendAllowanceTransaction(currentChainId, fromToken?.symbol!)
+			console.log('Waiting for approval')
+			// sleep for 10 seconds for letting the transaction to be mined
+			await new Promise(r => setTimeout(r, 10000))
+		}
 
-		// console.log('sending bridge transaction')
+		console.log('sending bridge transaction')
 
-		// await sendBridgeTransaction(currentChainId, fromToken?.symbol!)
+		await sendBridgeTransaction(currentChainId, fromToken?.symbol!)
 	}
 
 	return (
