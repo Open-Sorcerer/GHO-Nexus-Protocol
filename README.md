@@ -29,3 +29,30 @@ Our platform is designed to cater to a diverse range of users and scenarios:
   - Smart Contract
 
 Join us at GHOtela, where we bridge the gap between blockchains and open up a world of possibilities in the DeFi space. Experience the future of digital asset management today!
+
+# Smart Contract Archieture
+
+## GHO Bridge
+
+A Gho user can simply interact with our dapp, select the destionation Blockchain, they want to send the Token to and Address of the EOA or smart contract they want to send token to, using chainlink CCIP we will transfer the token, apart from the GHO we also added BnM token.
+
+As any ERC20, user have approve the token, our dapp also take care of that.
+
+![WhatsApp Image 2024-01-21 at 20 09 44_9f4ce0b9](https://github.com/Open-Sorcerer/GHOtela/assets/60979345/f3eaeff2-c7fa-4de3-803c-5a6f16e831e1)
+
+![WhatsApp Image 2024-01-21 at 20 09 00_aab99623](https://github.com/Open-Sorcerer/GHOtela/assets/60979345/161e3f92-318b-4625-9b4e-0a4565498a5f)
+
+## Lending and Borrowing Protocol
+
+Our use case works off of 4 smart contracts
+- a "SourceContract" Contract on Arbitrum Sepolia (Source Chain) and Ethereum Sepolia (Source Chain)
+- a "Balance" Contract on Ethereum Sepolia (Destination Chain)
+- a "SourceGateway" Contract on Arbitrum that has _ccipReceive function for the Source chain
+- a "BalanceDestination" Contract on Ethereum Sepolia (Destination Chain) 
+
+A DEFI user deposits a token in SourceContract, and then, using Chainlink CCIP, transfers the message data, to Protocol. The Protocol contract that accepts the deposit. Using that transferred token as collateral, the user (i.e. depositor/borrower - the same EOA as on the source chain) initiates a borrow operation which mints units of the mock stablecoin to lend to the depositor/borrower .
+
+A DEFI user deposits a token in SourceContract, and then, using Chainlink CCIP, transfers the message data, to `Balance` contract 
+
+
+
