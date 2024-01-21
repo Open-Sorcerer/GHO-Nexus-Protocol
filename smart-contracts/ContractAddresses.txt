@@ -1,0 +1,3 @@
+TokenBridge contract deployed on Ethereum Sepolia with address:  0xfb4F2aed17a466f78587612751c0d21d4755BF57
+
+TokenBridge contract deployed on Arbritium Sepolia with address: 0xaB0Ce2237830Ad713b3134e5307521f20E1C0ff6
