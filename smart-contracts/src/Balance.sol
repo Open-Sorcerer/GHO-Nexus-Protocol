@@ -40,6 +40,11 @@ contract Balance {
 
     mapping(address => bool) public allowedToken;
 
+    event ReceivedLendMessage();
+    event ReceivedBorrowMessage();
+    event ReceivedRePayFullMessage();
+    event ReceivedremoveLendBalanceMessage();
+
     address[] public allowedTokenArray;
 
     constructor(address _owner, address _router, address _link) {
@@ -73,17 +78,20 @@ contract Balance {
     }
 
     // function to update the data of the tokens
-    function lend(address _token, uint256 _amount) public {
-        userLendTokenBalance[msg.sender][_token] += _amount;
+    function lend(address _user, address _token, uint256 _amount) public {
+        userLendTokenBalance[_user][_token] += _amount;
 
         if (isEthereum[_token]) {
-            userLendBalance[msg.sender] += PriceConverter.getEthInUsd(_amount);
+            userLendBalance[_user] += PriceConverter.getEthInUsd(_amount);
         } else {
-            userLendBalance[msg.sender] += _amount;
+            userLendBalance[_user] += _amount;
         }
+
+        emit ReceivedLendMessage();
     }
 
     function borrow(
+        address _user,
         address _token,
         uint256 _amount,
         uint64 calledChainSelector,
@@ -96,17 +104,18 @@ contract Balance {
             amount = _amount;
         }
 
-        if (amount > getBorrowLimitLeft(msg.sender)) {
+        if (amount > getBorrowLimitLeft(_user)) {
             revert BORROW_LIMIT_EXCEED();
         }
 
-        userBorrowTokenBalance[msg.sender][_token] += _amount;
-        borrowBalance[msg.sender] += amount;
+        userBorrowTokenBalance[_user][_token] += _amount;
+        borrowBalance[_user] += amount;
 
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: abi.encodeWithSignature(
-                "borrowToken(address,uint256)",
+                "borrowToken(address,address,uint256)",
+                _user,
                 _token,
                 _amount
             ),
@@ -127,9 +136,11 @@ contract Balance {
             calledChainSelector,
             message
         );
+
+        emit ReceivedBorrowMessage();
     }
 
-    function rePayFull(address _token, uint256 _amount) public {
+    function rePayFull(address _user, address _token, uint256 _amount) public {
         uint256 amount;
         if (isEthereum[_token]) {
             amount = PriceConverter.getEthInUsd(_amount);
@@ -137,20 +148,23 @@ contract Balance {
             amount = _amount;
         }
 
-        if (amount < ((borrowBalance[msg.sender] * borrowInterestRate) / 100))
+        if (amount < ((borrowBalance[_user] * borrowInterestRate) / 100))
             revert NOT_ENOUGH_AMOUNT_REPAYFULL();
 
         uint256 length = allowedTokenArray.length;
         unchecked {
             for (uint256 i = 0; i < length; ) {
-                userBorrowTokenBalance[msg.sender][allowedTokenArray[i]] = 0;
+                userBorrowTokenBalance[_user][allowedTokenArray[i]] = 0;
                 ++i;
             }
         }
-        borrowBalance[msg.sender] = 0;
+        borrowBalance[_user] = 0;
+
+        emit ReceivedRePayFullMessage();
     }
 
     function removeLendBalance(
+        address _user,
         address _token,
         uint256 _amount,
         uint64 calledChainSelector,
@@ -163,16 +177,17 @@ contract Balance {
             amount = _amount;
         }
 
-        if (userLendTokenBalance[msg.sender][_token] < _amount)
+        if (userLendTokenBalance[_user][_token] < _amount)
             revert NOT_ENOUGH_TOKEN_LENDED();
 
-        userLendTokenBalance[msg.sender][_token] -= _amount;
-        userLendBalance[msg.sender] -= amount;
+        userLendTokenBalance[_user][_token] -= _amount;
+        userLendBalance[_user] -= amount;
 
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: abi.encodeWithSignature(
-                "removeLend(address,uint256)",
+                "removeLend(address,address,uint256)",
+                _user,
                 _token,
                 _amount
             ),
@@ -193,6 +208,8 @@ contract Balance {
             calledChainSelector,
             message
         );
+
+        emit ReceivedremoveLendBalanceMessage();
     }
 
     // function to get the Borrow limit of the user
