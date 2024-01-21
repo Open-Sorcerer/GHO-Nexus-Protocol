@@ -12,7 +12,8 @@ interface Chain {
 }
 
 import useBridge from '@lib/smartContractUtils'
-import {useNetwork} from "wagmi";
+import { useNetwork, useWalletClient } from 'wagmi'
+import { GhoTokenAddressEthSepolia } from '@lib/consts'
 
 const tokenList = [
 	{ symbol: 'ETH', image: 'https://statics.mayan.finance/eth.png' },
@@ -61,7 +62,13 @@ const chainList = [
 ]
 
 const Bridge = () => {
+<<<<<<< HEAD
 	const { callBridge } = useBridge(1000000000000000000n);
+=======
+	const { callBridge, checkingAllowance } = useBridge()
+
+	const { data: walletClient } = useWalletClient()
+>>>>>>> 4a309822d56862b88d995896574d384e352557ed
 	const [fromToken, setFromToken] = React.useState<Token>()
 	const [amount, setAmount] = React.useState<number>(0)
 	const [fromChain, setFromChain] = React.useState<Chain>({
@@ -77,8 +84,15 @@ const Bridge = () => {
 	const [isAnotherWallet, setIsAnotherWallet] = React.useState<boolean>(false)
 	const [toAddress, setToAddress] = React.useState<string>('')
 	const handleAction = async () => {
+<<<<<<< HEAD
 		await callBridge();
 		console.log('Bridge called')
+=======
+		console.log(walletClient?.chain.id)
+		let currentChainId = String(walletClient?.chain.id)
+
+		let allowanceAmount = await checkingAllowance(currentChainId, GhoTokenAddressEthSepolia) // tokenAddress needs to be variable
+>>>>>>> 4a309822d56862b88d995896574d384e352557ed
 	}
 
 	return (
