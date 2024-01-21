@@ -1,6 +1,7 @@
 import { usePermit } from 'wagmi-permit'
 import GHOTokenABI from './GHOTokenABI.json'
 import tokenBridgeABI from './tokenBridgeABI.json'
+import LendingContractABI from './SourceContractABI.json'
 import {
 	useAccount,
 	useContractRead,
@@ -10,6 +11,7 @@ import {
 	useWalletClient,
 } from 'wagmi'
 import {
+	ArbSepoliaLendingContractAddress,
 	BnMTokenAddressArbSepolia,
 	BnMTokenAddressEthSepolia,
 	chainIdArbitrumSepolia,
@@ -187,12 +189,49 @@ const useBridge = (props: any) => {
 		deadline: BigInt(Math.floor(Date.now() / 1000) + 100_000),
 	})
 
-	const callBridge = async () => {
-		console.log(props.amount)
-		console.log('publicClient', await publicClient.getChainId())
-		console.log('EthSepoliaData', formatEther(GhoEthSepoliaAllowance as bigint))
+	/////
+	// Lending Functions
+	/////
 
-		GhoEthSepoliaApproval?.()
+	/// Approval
+
+	const { config: LendingContractApprovalConfig } = usePrepareContractWrite({
+		address: GhoTokenAddressArbSepolia,
+		abi: GHOTokenABI,
+		functionName: 'approve',
+		args: [
+			ArbSepoliaLendingContractAddress, // giving spending rights to the bridge
+			1000000000000000000n, // 1 GHO
+		], // 1 GHO, change to variable
+	})
+
+	const { write: LendingContractApproval } = useContractWrite(LendingContractApprovalConfig)
+
+	const { config: LendingContractConfig } = usePrepareContractWrite({
+		address: ArbSepoliaLendingContractAddress, // change address
+		abi: LendingContractABI,
+		functionName: 'lendToken',
+		args: [
+			GhoTokenAddressArbSepolia, // token to supply
+			1000000000000000000n, // amount to supply
+			chainIdEthereumSepolia, // chain to supply to
+			'0x41cd49f1fb38b07e072a9c815c629a7a48b18061', // receiving contract address
+		],
+	})
+
+	const { write: LendingContractWrite } = useContractWrite(LendingContractConfig)
+
+	const callBridge = async () => {
+		console.log('Approval', LendingContractConfig)
+
+		// LendingContractApproval?.()
+		LendingContractWrite?.()
+
+		// console.log(props.amount)
+		// console.log('publicClient', await publicClient.getChainId())
+		// console.log('EthSepoliaData', formatEther(GhoEthSepoliaAllowance as bigint))
+
+		// GhoEthSepoliaApproval?.()
 		// GhoEthSepoliaBridge?.()
 		// console.log(BigInt(Math.floor(Date.now() / 1000) + 100_000))
 		// const permitSignature = await signPermit?.({

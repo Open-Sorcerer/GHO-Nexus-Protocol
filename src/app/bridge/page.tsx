@@ -73,20 +73,20 @@ const Bridge = () => {
 		toAddress,
 	})
 	const handleAction = async () => {
-		// await callBridge()
-		// console.log('Bridge called')
-		let currentChainId = String(walletClient?.chain.id)
+		await callBridge()
+		// // console.log('Bridge called')
+		// let currentChainId = String(walletClient?.chain.id)
 
-		let allowanceAmount = await checkingAllowance(currentChainId, fromToken?.symbol!) // tokenAddress needs to be variable
-		console.log('allowanceAmount', allowanceAmount)
+		// let allowanceAmount = await checkingAllowance(currentChainId, fromToken?.symbol!) // tokenAddress needs to be variable
+		// console.log('allowanceAmount', allowanceAmount)
 
-		if (parseFloat(allowanceAmount) < amount) {
-			console.log('allowanceAmount is less than amount')
-			await sendAllowanceTransaction(currentChainId, fromToken?.symbol!)
-			console.log('Waiting for approval')
-		}
+		// if (parseFloat(allowanceAmount) < amount) {
+		// 	console.log('allowanceAmount is less than amount')
+		// 	await sendAllowanceTransaction(currentChainId, fromToken?.symbol!)
+		// 	console.log('Waiting for approval')
+		// }
 
-		console.log('sending bridge transaction')
+		// console.log('sending bridge transaction')
 
 		// await sendBridgeTransaction(currentChainId, fromToken?.symbol!)
 	}

@@ -4,6 +4,9 @@ export const COOKIE_NAME = 'web3session'
 export const tokenBridgeEthSepoliaAddress = '0xfb4F2aed17a466f78587612751c0d21d4755BF57'
 export const tokenBridgeArbSepoliaAddress = '0xaB0Ce2237830Ad713b3134e5307521f20E1C0ff6'
 
+export const ArbSepoliaLendingContractAddress = '0x980600E1ADA72f86d332Fb76D34D590c4Fa4BC1C'
+export const EthSepoliaLendingContractAddress = '0xA2e6cf09DE7acedd4329eaE1F25D0Eb5478949C1'
+
 export const chainIdEthereumSepolia = 16015286601757825753n
 export const chainIdOptimismGoerli = 2664363617261496610n
 export const chainIdAvalancheFuji = 14767482510784806043n
