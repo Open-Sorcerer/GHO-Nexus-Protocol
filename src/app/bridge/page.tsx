@@ -34,6 +34,7 @@ const Bridge = () => {
 	const { data: walletClient } = useWalletClient()
 	const [fromToken, setFromToken] = React.useState<Token>()
 	const [amount, setAmount] = React.useState<number>(0)
+	const [buttonName, setButtonName] = React.useState<string>('Cross Chain Sorcery')
 	const [fromChain, setFromChain] = React.useState<Chain>({
 		symbol: 'Ethereum',
 		image: 'https://statics.mayan.finance/assets/eth.png',
@@ -53,8 +54,13 @@ const Bridge = () => {
 		fromToken,
 		toAddress,
 	})
+
+	const delay = ms => new Promise(res => setTimeout(res, ms))
+
 	const handleAction = async () => {
 		let currentChainId = String(walletClient?.chain.id)
+
+		setButtonName("It's happening...")
 
 		let allowanceAmount = await checkingAllowance(currentChainId, fromToken?.symbol!) // tokenAddress needs to be variable
 		console.log('allowanceAmount', allowanceAmount)
@@ -63,13 +69,19 @@ const Bridge = () => {
 			console.log('allowanceAmount is less than amount')
 			await sendAllowanceTransaction(currentChainId, fromToken?.symbol!)
 			console.log('Waiting for approval')
+			setButtonName('Waiting for approval')
 			// sleep for 10 seconds for letting the transaction to be mined
-			await new Promise(r => setTimeout(r, 10000))
+			await delay(10000)
 		}
 
 		console.log('sending bridge transaction')
 
 		await sendBridgeTransaction(currentChainId, fromToken?.symbol!)
+		await delay(10000)
+		setButtonName("It's done!")
+
+		await delay(5000)
+		setButtonName('Cross Chain Sorcery')
 	}
 
 	return (
@@ -334,7 +346,7 @@ const Bridge = () => {
 					onClick={() => handleAction()}
 					className="w-full mt-5 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-base font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
 				>
-					Connect Wallet
+					{buttonName}
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
