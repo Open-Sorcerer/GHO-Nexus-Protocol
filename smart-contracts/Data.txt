@@ -51,3 +51,15 @@ BalanceDestination contract deployed on  Ethereum Sepolia with address:  0x41CD4
 
 
 https://ccip.chain.link/msg/0xe66a63a47a9b9442b013856d8cbf9fb11ff216ef473ffb6b9d7b9cb645707f1b
+
+-------------
+
+forge verify-contract --chain-id <CHAIN_ID> <CONTRACT_ADDRESS> <CONTRACT_FILE_PATH> <ETHERSCAN_API_KEY> [--constructor-args <ARGS>]
+
+
+forge verify-contract --chain-id <CHAIN_ID>
+
+----
+
+
+

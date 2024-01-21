@@ -33,4 +33,5 @@ contract DeployBalanceDestination is Script, Helper {
 // forge script ./script/deployBalanceDestination.s.sol:DeployBalanceDestination -vvv --broadcast --rpc-url ethereumSepolia --sig "run(uint8)" -- 0
 
 
-// forge verify-contract --etherscan-api-key MGE9XWX9ISUPSDHFWP6MDB2W4A48J9V35P  0x41CD49f1Fb38b07E072a9C815c629A7A48b18061 ./src/BalanceDestination.sol:BalanceDestination --chain 11155111 --constructor-args $(cast abi-encode "constructor(address,address)" "0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59" "0x1FB29E8c8AE352C7eccEA326d569a3E5C5C0e7C8")
+// forge verify-contract --etherscan-api-key MGE9XWX9ISUPSDHFWP6MDB2W4A48J9V35P  0xf3b1Db4c26be30a420286C66f39524d3aA1F4B96 ./src/BalanceDestination.sol:BalanceDestination --chain 11155111 --constructor-args $(cast abi-encode "constructor(address,address)" "0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59" "0xa6d5194686b1468CaF4ECC5dBE83E8C30C547942")
+
