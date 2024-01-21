@@ -55,7 +55,7 @@ const Bridge = () => {
 		toAddress,
 	})
 
-	const delay = ms => new Promise(res => setTimeout(res, ms))
+	const delay = (ms: number | undefined) => new Promise(res => setTimeout(res, ms))
 
 	const handleAction = async () => {
 		let currentChainId = String(walletClient?.chain.id)
