@@ -1,4 +1,3 @@
-import { createConfig } from '@wagmi/core'
 import { createPublicClient, http, createWalletClient, custom } from 'viem'
 
 import { sepolia, arbitrumSepolia } from 'viem/chains'
