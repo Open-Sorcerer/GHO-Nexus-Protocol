@@ -21,9 +21,9 @@ import {
 import { formatEther } from 'viem'
 
 const useBridge = (props: any) => {
-    const {address} = useAccount()
-    const {data: walletClient} = useWalletClient()
-    const publicClient = usePublicClient()
+	const { address } = useAccount()
+	const { data: walletClient } = useWalletClient()
+	const publicClient = usePublicClient()
 
 	/// first call GHO Token Address
 	/// Call the function allowance to get the amount of tokens that the spender can spend from the owner
@@ -59,15 +59,15 @@ const useBridge = (props: any) => {
 
 	const { write: GhoArbSepoliaApproval } = useContractWrite(GhoArbSepoliaApprovalConfig)
 
-    const {config: GhoEthSepoliaApprovalConfig} = usePrepareContractWrite({
-        address: GhoTokenAddressEthSepolia,
-        abi: GHOTokenABI,
-        functionName: 'approve',
-        args: [
-            tokenBridgeEthSepoliaAddress, // giving spending rights to the bridge
-            props?.amount, // 1 GHO
-        ], // 1 GHO, change to variable
-    })
+	const { config: GhoEthSepoliaApprovalConfig } = usePrepareContractWrite({
+		address: GhoTokenAddressEthSepolia,
+		abi: GHOTokenABI,
+		functionName: 'approve',
+		args: [
+			tokenBridgeEthSepoliaAddress, // giving spending rights to the bridge
+			props?.sendingAmount as bigint, // 1 GHO
+		], // 1 GHO, change to variable
+	})
 
 	const { write: GhoEthSepoliaApproval } = useContractWrite(GhoEthSepoliaApprovalConfig)
 
@@ -115,16 +115,17 @@ const useBridge = (props: any) => {
 	})
 
 	const callBridge = async () => {
+		console.log(props.sendingAmount)
 		console.log('publicClient', await publicClient.getChainId())
 		console.log('EthSepoliaData', formatEther(GhoEthSepoliaAllowance as bigint))
 
-        GhoEthSepoliaApproval?.()
-        // GhoEthSepoliaBridge?.()
-        // console.log(BigInt(Math.floor(Date.now() / 1000) + 100_000))
-        // const permitSignature = await signPermit?.({
-        // 	value: parseEther('1'),
-        // 	deadline: BigInt(Math.floor(Date.now() / 1000) + 100_000),
-        // })
+		GhoEthSepoliaApproval?.()
+		// GhoEthSepoliaBridge?.()
+		// console.log(BigInt(Math.floor(Date.now() / 1000) + 100_000))
+		// const permitSignature = await signPermit?.({
+		// 	value: parseEther('1'),
+		// 	deadline: BigInt(Math.floor(Date.now() / 1000) + 100_000),
+		// })
 
 		// console.log('permitSignature', permitSignature)
 	}
