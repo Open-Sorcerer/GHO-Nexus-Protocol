@@ -1,7 +1,7 @@
 # GHO Nexus Protocol
 ## Interchain Credit System Leveraging GHO and Chainlink CCIP
 
-Welcome to GHO Nexus Protocol – a cutting-edge DeFi lending and borrowing platform designed for the new era of cryptocurrency. Our platform facilitates the efficient management of digital assets across multiple blockchain networks, offering a unique, seamless experience. GHO Nexus Protocol is also the First GHO Bridge.
+Welcome to GHO Nexus Protocol – a cutting-edge DeFi lending and borrowing platform designed for the new era of cryptocurrency. Our platform facilitates the efficient management of digital assets across multiple blockchain networks, offering a unique, seamless experience. GHO Nexus Protocol is also the First GHO Bridge and lending and Borrowing Protocol.
 
 ## Comprehensive Lending and Borrowing Ecosystem
 GHO Nexus Protocol transcends a typical platform; it's an ecosystem enabling users to lend and borrow digital assets like GHO and Ethereum (ETH) across various blockchains. This feature enhances the liquidity and utility of your digital holdings.
